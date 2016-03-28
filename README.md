@@ -6,3 +6,4 @@ Frameworks to look at using:
  - https://github.com/fluent-ffmpeg/node-fluent-ffmpeg for node ffmpeg stuff
  - http://binaryjs.com for streaming possibly
  - https://github.com/feross/webtorrent/blob/master/docs/api.md for torrenting
+ - http://www.idcloak.com/proxylist/free-proxy-servers-list.html#sort for proxies
