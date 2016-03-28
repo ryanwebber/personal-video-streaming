@@ -1,0 +1,19 @@
+{
+  "name": "video-stream",
+  "version": "1.0.0",
+  "description": "Node.js video streaming",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanwebber/video-stream.git"
+  },
+  "author": "ryanwebber",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanwebber/video-stream/issues"
+  },
+  "homepage": "https://github.com/ryanwebber/video-stream#readme"
+}
