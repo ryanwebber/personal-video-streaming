@@ -34,7 +34,8 @@ module.exports.routes = {
 
   '/': {
     view: 'homepage'
-  }
+  },
+  'GET /watch/:video_id': 'StreamController.stream'
 
   /***************************************************************************
   *                                                                          *
