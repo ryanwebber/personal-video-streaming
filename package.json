@@ -1,8 +1,8 @@
 {
-  "name": "tmp",
+  "name": "Video-Stream",
   "private": true,
   "version": "0.0.0",
-  "description": "a Sails application",
+  "description": "Video Streaming Webservice",
   "keywords": [],
   "dependencies": {
     "ejs": "2.3.4",
@@ -20,8 +20,7 @@
     "grunt-sync": "0.2.4",
     "include-all": "~0.1.6",
     "rc": "1.0.1",
-    "sails": "~0.12.1",
-    "sails-disk": "~0.10.9"
+    "sails": "~0.12.1"
   },
   "scripts": {
     "debug": "node debug app.js",
@@ -32,6 +31,6 @@
     "type": "git",
     "url": "git://github.com/ryan/tmp.git"
   },
-  "author": "ryan",
+  "author": "Ryan Webber",
   "license": ""
 }
