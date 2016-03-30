@@ -28,7 +28,7 @@
  			required: true
  		},
  		seasonNumber: {
- 			type: 'integer'
+ 			type: 'integer',
  			required: true
  		},
  		season: {
