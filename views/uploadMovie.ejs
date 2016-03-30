@@ -1,0 +1,15 @@
+<form id="movie_upload">
+	<input name="name" placeholder="Name"></input>
+	<input name="trakt_id" placeholder="id"></input>
+	<input name="image" placeholder="Image URL"></input>
+	<input name="description" placeholder="Description"></input>
+	<input name="year" placeholder="Year"></input>
+</form>
+
+<button id="files">File</button>
+
+<script>
+	$(document).ready(function(){
+		var uploader = new MovieUploader($("#movie_upload"))
+	});
+</script>

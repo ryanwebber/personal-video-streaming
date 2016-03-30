@@ -20,7 +20,7 @@
  * http://sailsjs.org/#!/documentation/concepts/Routes/RouteTargetSyntax.html
  */
 
-module.exports.routes = {
+ module.exports.routes = {
 
   /***************************************************************************
   *                                                                          *
@@ -32,10 +32,18 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': {
-    view: 'homepage'
-  },
-  'GET /watch/:video_id': 'StreamController.stream'
+    '/': {
+        view: 'homepage'
+    },
+    'GET /upload/show': {
+        view: 'uploadShow'
+    },
+    'GET /upload/movie': {
+        view: 'uploadMovie'
+    },
+    'POST /upload/show': 'UploadController.uploadShow',
+    'POST /upload/movie': 'UploadController.uploadMovie',
+    'GET /watch/:video_id': 'StreamController.stream'
 
   /***************************************************************************
   *                                                                          *
