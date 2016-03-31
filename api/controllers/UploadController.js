@@ -16,7 +16,7 @@ module.exports = {
 		var year = req.body['year'];
 
 		if(trakt_id === null || trakt_id === undefined || !name || !year){
-			return res.send(415)
+			return res.send(400)
 		}
 
 		req.file('file').upload(function (err, uploadedFiles) {
