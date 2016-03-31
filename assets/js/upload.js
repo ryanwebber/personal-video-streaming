@@ -15,22 +15,33 @@ $.fn.serializeObject = function(){
 };
 
 var MovieUploader = function($el){
-	var r = new Resumable({
-		target:'/upload/movie/',
-		query: function(){
-			return {}
+	
+	$("#uploader", $el).dropzone({
+		url: "/upload/movie",
+		uploadMultiple: false,
+		clickable: true,
+		autoProcessQueue: false,
+		accept: function(file, done) {
+		    if (file.name.toLowerCase().trim().split('.').pop() !== "mp4") {
+				done("File must be an mp4.");
+		    }
+		    else {
+		    	done();
+		    }
+		},
+		uploadprogress: function(file, progress, bytesSent) {
+			console.log(progress)
+		},
+		success: function(){
+			console.log("DONE!")
+		},
+		init: function(){
+			this.on('addedfile', function(file){
+				console.log(file.name);
+				this.processQueue()	
+			});
 		}
-	});
-
-	r.assignBrowse(document.getElementById('files'));
-
-	r.on('fileAdded', function(){
-		r.upload()
-	});
-
-	r.on('progress', function(){
-		console.log(Math.floor(r.progress()*100) + '%');
-	});
+	})
 
 	return {};
 }
