@@ -1,6 +1,4 @@
 // The main controller for handling uploading to clients
-var Resumable = require('./util/resumable');
-var resumable = Resumable('.tmp/uploads');
 
 var fs = require('fs');
 path = require('path');
@@ -54,10 +52,6 @@ module.exports = {
 
 	uploadShow: function (req, res) {
 		console.log('hey')
-		resumable.post(req, function(status, filename, original_filename, identifier){
-	        console.log('POST', status, original_filename, identifier);
-
-	        res.ok("Successfully uploaded file to: " + filename)
-	    });
+		res.send(200);
 	}
 }
