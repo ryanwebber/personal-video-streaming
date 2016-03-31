@@ -12,6 +12,7 @@ module.exports = resumable = function(temporaryFolder){
     fs.mkdirSync($.temporaryFolder);
   }catch(e){}
 
+  $.currentUploads = {}
 
   var cleanIdentifier = function(identifier){
     return identifier.replace(/^0-9A-Za-z_-/img, '');
@@ -60,76 +61,58 @@ module.exports = resumable = function(temporaryFolder){
     return 'valid';
   }
 
-  //'found', filename, original_filename, identifier
-  //'not_found', null, null, null
-  $.get = function(req, callback){
-    var chunkNumber = req.param('resumableChunkNumber', 0);
-    var chunkSize = req.param('resumableChunkSize', 0);
-    var totalSize = req.param('resumableTotalSize', 0);
-    var identifier = req.param('resumableIdentifier', "");
-    var filename = req.param('resumableFilename', "");
-
-    if(validateRequest(chunkNumber, chunkSize, totalSize, identifier, filename)=='valid') {
-      var chunkFilename = getChunkFilename(chunkNumber, identifier);
-      fs.exists(chunkFilename, function(exists){
-          if(exists){
-            callback('found', chunkFilename, filename, identifier);
-          } else {
-            callback('not_found', null, null, null);
-          }
-        });
-    } else {
-      callback('not_found', null, null, null);
-    }
-  }
-
   //'partly_done', filename, original_filename, identifier
   //'done', filename, original_filename, identifier
   //'invalid_resumable_request', null, null, null
   //'non_resumable_request', null, null, null
-  $.post = function(req, callback){
-
+  $.post = function(req, file, callback){
     var fields = req.body;
-    var files = req.files;
+    var files = req.file;
 
     var chunkNumber = fields['resumableChunkNumber'];
     var chunkSize = fields['resumableChunkSize'];
     var totalSize = fields['resumableTotalSize'];
     var identifier = cleanIdentifier(fields['resumableIdentifier']);
     var filename = fields['resumableFilename'];
-
+    var numberOfChunks = Math.max(Math.floor(totalSize/(chunkSize*1.0)), 1);
 		var original_filename = fields['resumableIdentifier'];
 
-    if(!files[$.fileParameterName] || !files[$.fileParameterName].size) {
+    if(!file || !file.size) {
       callback('invalid_resumable_request', null, null, null);
       return;
     }
-    var validation = validateRequest(chunkNumber, chunkSize, totalSize, identifier, files[$.fileParameterName].size);
+
+    if(!$.currentUploads[identifier]){
+      $.currentUploads[identifier] = {
+        numChunks: numberOfChunks,
+        numUploaded: 0,
+      }
+    }
+
+    var validation = validateRequest(chunkNumber, chunkSize, totalSize, identifier, file.size);
     if(validation=='valid') {
       var chunkFilename = getChunkFilename(chunkNumber, identifier);
 
       // Save the chunk (TODO: OVERWRITE)
-      fs.rename(files[$.fileParameterName].path, chunkFilename, function(){
-
-        // Do we have all the chunks?
-        var currentTestChunk = 1;
-        var numberOfChunks = Math.max(Math.floor(totalSize/(chunkSize*1.0)), 1);
-        var testChunkExists = function(){
-              fs.exists(getChunkFilename(currentTestChunk, identifier), function(exists){
-                if(exists){
-                  currentTestChunk++;
-                  if(currentTestChunk>numberOfChunks) {
-                    callback('done', filename, original_filename, identifier);
-                  } else {
-                    // Recursion
-                    testChunkExists();
-                  }
-                } else {
-                  callback('partly_done', filename, original_filename, identifier);
+      fs.rename(file.fd, chunkFilename, function(){
+        $.currentUploads[identifier].numUploaded += 1
+        if($.currentUploads[identifier].numUploaded == $.currentUploads[identifier].numChunks){
+          sails.log.verbose("Done Uploading", identifier)
+          var filePath = path.join($.temporaryFolder, './'+filename)
+          var stream = fs.createWriteStream(filePath)
+          $.currentUploads[identifier] = undefined
+          $.write(identifier, stream, {
+            onDone: function(){
+              $.clean(identifier, {
+                onDone: function(){
+                  callback('done', filePath, original_filename, identifier);
                 }
-              });
+              })
             }
-        testChunkExists();
+          });
+        }else{
+          callback('partly_done', filename, req.session.uploads[identifier].numUploaded, identifier);
+        }
       });
     } else {
           callback(validation, filename, original_filename, identifier);
@@ -187,17 +170,15 @@ module.exports = resumable = function(temporaryFolder){
 
           var chunkFilename = getChunkFilename(number, identifier);
 
-          //console.log('removing pipeChunkRm ', number, 'chunkFilename', chunkFilename);
           fs.exists(chunkFilename, function(exists) {
               if (exists) {
 
-                  console.log('exist removing ', chunkFilename);
-                  fs.unlink(chunkFilename, function(err) {
-                      if (err && options.onError) options.onError(err);
+                  sails.log.verbose('exist removing ', chunkFilename);
+                  fs.unlink(chunkFilename, function(err){
+                    if(!err){
+                      pipeChunkRm(number + 1);
+                    }
                   });
-
-                  pipeChunkRm(number + 1);
-
               } else {
 
                   if (options.onDone) options.onDone();

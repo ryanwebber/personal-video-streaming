@@ -24,11 +24,12 @@
 			type: 'string'
 		},
 		year: {
-			type: 'integer',
+			type: 'string',
 			required: true
 		},
 		video: {
-			model: 'video'
+			model: 'video',
+			required: true
 		}
 	}
  };

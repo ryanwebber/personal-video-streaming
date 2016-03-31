@@ -16,7 +16,7 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.policies.html
  */
 
-var multipart = require('connect-multiparty');
+var multipart = require('connect-multiparty')();
 
 module.exports.policies = {
 
@@ -49,8 +49,4 @@ module.exports.policies = {
 		// before letting any users feed our rabbits
 		// feed : ['isNiceToAnimals', 'hasRabbitFood']
 	// }
-
-  // UploadController: {
-    "*" : 'testPolicy'
-  // }
 };
