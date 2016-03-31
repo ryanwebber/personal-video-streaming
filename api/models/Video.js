@@ -10,6 +10,17 @@
 	attributes: {
 		file: {
             type: 'string'
+        },
+        uploaded: {
+		type: 'boolean',
+		defaultsTo: false
         }
+	},
+	beforeUpdate: function(values, cb){
+		if(!!values.file && values.uploaded === undefined){
+			values.uploaded = true;
+		}
+		cb();
 	}
  };
+

@@ -43,6 +43,7 @@
     },
     'POST /upload/show': 'UploadController.uploadShow',
     'POST /upload/movie': 'UploadController.uploadMovie',
+    'GET /upload/movie/autofill': 'UploadController.autofillMovie',
     'GET /watch/:video_id': 'StreamController.stream'
 
   /***************************************************************************
