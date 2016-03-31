@@ -6,7 +6,6 @@
  */
 
  module.exports = {
-	autoPK: false,
  	attributes: {
  		name: {
  			type: 'string',
@@ -14,10 +13,11 @@
  		},
  		trakt_id: {
  			type: 'integer',
- 			required: true,
- 			primaryKey: true
  		},
- 		image: {
+ 		poster: {
+ 			type: 'string'
+ 		},
+ 		cover: {
  			type: 'string'
  		},
  		description: {
