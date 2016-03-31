@@ -16,32 +16,25 @@ $.fn.serializeObject = function(){
 
 var MovieUploader = function($el){
 
-	$("#uploader", $el).dropzone({
+	var uploader = new UploadQueue($("#uploader", $el), {
 		url: "/upload/movie",
-		uploadMultiple: false,
-		clickable: true,
-		autoProcessQueue: false,
-		accept: function(file, done) {
-		    if (file.name.toLowerCase().trim().split('.').pop() !== "mp4") {
-				done("File must be an mp4.");
-		    }
-		    else {
-			done();
-		    }
+		multiple: true,
+		onFilesChanged: function(files){
+			for(var f in files){
+				console.log("Changed:", files[f]);
+			}
+			this.submit()
 		},
-		uploadprogress: function(file, progress, bytesSent) {
-			console.log(progress)
+		fileData: function(file){
+			return $el.serializeObject()
 		},
-		success: function(){
-			console.log("DONE!")
+		beforeUpload: function(file, remaining){
+			console.log("Preparing: ", file.name, remaining)
 		},
-		init: function(){
-			this.on('addedfile', function(file){
-				console.log(file.name);
-				this.processQueue()
-			});
+		onSuccess: function(){
+			console.log("Done!");
 		}
-	})
+	});
 
 	return {};
 }
