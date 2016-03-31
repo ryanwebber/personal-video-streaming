@@ -1,0 +1,25 @@
+{
+  "name": "Video-Stream",
+  "description": "Video Streaming Webservice",
+  "main": "app.js",
+  "authors": [
+    "Ryan Webber"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ryanwebber/video-stream",
+  "moduleType": [
+    "amd"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.14.8",
+    "jquery": "~2.2.2",
+    "requirejs": "~2.2.0"
+  }
+}

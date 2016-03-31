@@ -36,10 +36,10 @@
         view: 'homepage'
     },
     'GET /upload/show': {
-        view: 'uploadShow'
+        view: 'upload/show'
     },
     'GET /upload/movie': {
-        view: 'uploadMovie'
+        view: 'upload/movie'
     },
     'POST /upload/show': 'UploadController.uploadShow',
     'POST /upload/movie': 'UploadController.uploadMovie',
