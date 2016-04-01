@@ -1,30 +1,100 @@
-/**
- * importer.less
- *
- * By default, new Sails projects are configured to compile this file
- * from LESS to CSS.  Unlike CSS files, LESS files are not compiled and
- * included automatically unless they are imported below.
- *
- * The LESS files imported below are compiled and included in the order
- * they are listed.  Mixins, variables, etc. should be imported first
- * so that they can be accessed by subsequent LESS stylesheets.
- *
- * (Just like the rest of the asset pipeline bundled in Sails, you can
- * always omit, customize, or replace this behavior with SASS, SCSS,
- * or any other Grunt tasks you like.)
- */
 
+@import 'variables.less';
+@import 'input.less';
+@import 'homepage.less';
 
+html,body{
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
 
-// For example:
-//
-// @import 'variables/colors.less';
-// @import 'mixins/foo.less';
-// @import 'mixins/bar.less';
-// @import 'mixins/baz.less';
-//
-// @import 'styleguide.less';
-// @import 'pages/login.less';
-// @import 'pages/signup.less';
-//
-// etc.
+:root{
+	overflow-y: auto !important;
+}
+
+@navHeight: 64px;
+nav{
+
+	background-color: @dark;
+	width:100%;
+	height: @navHeight;
+	margin-bottom: 40px;
+	line-height: @navHeight;
+
+	div.nav-container{
+		margin-left: auto;
+		margin-right: auto;
+		width: @pageWidth;
+		height: 100%;
+
+		input{
+			height: 100%;
+			background-color: @moreDark;
+			color: @light;
+			width: 100%;
+			border-radius: 0px;
+			border: none;
+			outline: none;
+			border-left: 1px dashed @accent;
+			border-right: 1px dashed @accent;
+		}
+
+		.nav-block{
+			height: 100%;
+			background-color: @moreDark;
+			color: @light;
+			width: 100%;
+			border-left: 1px dashed @accent;
+			border-right: 1px dashed @accent;
+			text-align: center;
+		}
+
+		.nav-item{
+			display: inline-block;
+		}
+
+		.nav-left{
+			float:left;
+		}
+
+		.nav-right{
+			float: right;
+		}
+	}
+}
+
+nav.secondary{
+	background-color: @accent;
+	color: @dark;
+	height: @navHeight/2;
+	line-height: @navHeight/2;
+	margin-top: -40px;
+
+	a{
+		color: #fff;
+		float: right;
+		margin-left: 20px;
+		font-weight: 100;
+	}
+}
+
+div.app{
+	width: @pageWidth;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div.overlay-layer{
+	position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+	background-color: rgba(0,0,0,0.4);
+}
+
+div.center{
+	text-align: center;
+}
