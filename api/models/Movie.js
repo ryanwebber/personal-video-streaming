@@ -29,7 +29,6 @@
 		},
 		video: {
 			model: 'video',
-			required: true
 		}
 	}
  };

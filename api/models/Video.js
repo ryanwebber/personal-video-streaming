@@ -9,18 +9,9 @@
 
 	attributes: {
 		file: {
-            type: 'string'
-        },
-        uploaded: {
-		type: 'boolean',
-		defaultsTo: false
+            type: 'string',
+            required: true
         }
-	},
-	beforeUpdate: function(values, cb){
-		if(!!values.file && values.uploaded === undefined){
-			values.uploaded = true;
-		}
-		cb();
 	}
  };
 

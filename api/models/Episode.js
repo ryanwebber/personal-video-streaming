@@ -17,7 +17,7 @@
 			required: true,
 			primaryKey: true
 		},
-		image: {
+		screenshot: {
 			type: 'string'
 		},
 		description: {
