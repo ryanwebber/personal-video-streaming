@@ -6,21 +6,21 @@
  */
 
  module.exports = {
- 	autoPK: false,
  	attributes: {
  		name: {
  			type: 'string',
  			required: true
  		},
  		trakt_id: {
- 			type: 'integer',
- 			required: true,
- 			primaryKey: true
+ 			type: 'integer'
  		},
  		description: {
  			type: 'string'
  		},
- 		image: {
+ 		poster: {
+ 			type: 'string'
+ 		},
+ 		cover: {
  			type: 'string'
  		},
  		seasons: {

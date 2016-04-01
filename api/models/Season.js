@@ -6,12 +6,9 @@
  */
 
  module.exports = {
- 	autoPK: false,
  	attributes: {
  		trakt_id: {
  			type: 'integer',
- 			required: true,
- 			primaryKey: true
  		},
  		seasonNumber: {
  			type: 'integer',

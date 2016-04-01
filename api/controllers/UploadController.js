@@ -20,37 +20,50 @@ module.exports = {
             return res.send(400)
         }
 
-        req.file('file').upload(function (err, uploadedFiles) {
-            if(!err && uploadedFiles.length > 0){
-                var file = uploadedFiles[0];
-                console.log(file);
-                return res.send(200);
+        Movie.create({
+            name: name,
+            trakt_id: trakt_id,
+            poster: poster,
+            cover: cover,
+            description: description,
+            year: year,
+        }).exec(function(err, movie){
+            req.file('file').upload({
+                maxBytes: 0
+            }, function (err, uploadedFiles) {
+                if(!err && uploadedFiles.length > 0){
 
-                var extension = filename.split('.').pop();
-                var newFileName = name.trim().toLowerCase().replace(/\s+/g, '.') + '.(' + year + ').' + extension;
-                var newPath = path.join(base_path, newFileName);
-                fs.rename(filename, newPath, function(err){
-                    console.log(newPath)
+                    var filename = uploadedFiles[0].filename;
+                    var filePath = uploadedFiles[0].fd
 
-                    Video.create({
-                        file: newPath
-                    }).exec(function(err, video){
-                        Movie.create({
-                            name: name,
-                            trakt_id: trakt_id,
-                            poster: poster,
-                            cover: cover,
-                            description: description,
-                            year: year,
-                            video: video.id
-                        }).exec(function(err, movie){
-                            // TODO socket notification
-                        });
+                    var extension = filename.split('.').pop();
+                    var newFileName = name.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_(' + year + ').' + extension;
+                    var newPath = path.join(base_path, newFileName);
+                    fs.rename(filePath, newPath, function(err){
+
+                        if(!err){
+                            Video.create({
+                                file: newPath
+                            }).exec(function(err, video){
+                                movie.video = video.id;
+                                movie.save(function(err, obj){
+                                    if(!err){
+                                        res.send(200, movie);
+                                    }else{
+                                        res.send(500);
+                                    }
+                                });
+                            });
+                        }else{
+                            sails.log.error(err);
+                            res.send(500);
+                        }
                     });
-                });
-            }else{
-                res.send(503, err);
-            }
+                }else{
+                    sails.log.error(err);
+                    res.send(503, err);
+                }
+            });
         });
     },
 
@@ -111,8 +124,25 @@ module.exports = {
                 promise.then(function(results){
                     var show = results[0].show;
                     return trakt.season(show.ids.trakt, parsed.season).then(function(season){
-                        res.json(season);
+                    	var reduced = season.map(function(item){
+                    		return {
+                    			name: item.title,
+                    			episode: item.number,
+                    			trakt_id: item.ids.trakt,
+                    			description: item.overview,
+                    			screenshot: item.images.screenshot.medium
+                    		};
+                    	});
+                        res.json({
+                        	name: show.title,
+                        	trakt_id: show.ids.trakt,
+                        	description: show.overview,
+                        	poster: show.images.poster.thumb,
+                        	cover: show.images.fanart.medium,
+                        	episodes: reduced
+                        });
                     }).catch(function(err){
+                    	sails.log.error(err);
                         res.json({});
                     })
                 }).catch(function(err){
