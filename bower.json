@@ -20,6 +20,7 @@
   "dependencies": {
     "react": "~0.14.8",
     "jquery": "~2.2.2",
-    "requirejs": "~2.2.0"
+    "requirejs": "~2.2.0",
+    "concise": "~3.3.0"
   }
 }
