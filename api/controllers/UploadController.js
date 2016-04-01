@@ -3,7 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var ptn = require('parse-torrent-name');
-var trakt = require('trakt-api')(sails.config.trakt_api_key);
+var trakt = require('trakt-api')(sails.config.trakt_api_key, {extended: "full,images"});
 
 var base_path = '/data/media'
 
@@ -89,5 +89,37 @@ module.exports = {
     uploadShow: function (req, res) {
         console.log('hey')
         res.send(200);
+    },
+
+    autofillShow: function(req, res){
+        var filename = req.param("filename");
+        if(!filename){
+            res.send(400);
+        }else{
+            var parsed = ptn(filename);
+
+            if(!parsed.title || !parsed.season){
+                return res.json({});
+            }else{
+                var promise;
+                if(parsed.year){
+                    promise = trakt.searchShow(parsed.title, parsed.year);
+                }else{
+                    promise = trakt.searchShow(parsed.title);
+                }
+
+                promise.then(function(results){
+                    var show = results[0].show;
+                    return trakt.season(show.ids.trakt, parsed.season).then(function(season){
+                        res.json(season);
+                    }).catch(function(err){
+                        res.json({});
+                    })
+                }).catch(function(err){
+                    sails.log.error(err);
+                    res.json({});
+                });
+            }
+        }
     }
 }

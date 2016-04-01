@@ -32,18 +32,17 @@
   *                                                                          *
   ***************************************************************************/
 
-    '/': {
-        view: 'homepage'
-    },
-    'GET /upload/show': {
-        view: 'upload/show'
-    },
-    'GET /upload/movie': {
-        view: 'upload/movie'
-    },
+    '/': {view: 'homepage'},
+
+    'GET /upload/show': {view: 'upload/show'},
+    'GET /upload/movie': {view: 'upload/movie'},
+
     'POST /upload/show': 'UploadController.uploadShow',
     'POST /upload/movie': 'UploadController.uploadMovie',
+
     'GET /upload/movie/autofill': 'UploadController.autofillMovie',
+    'GET /upload/show/autofill': 'UploadController.autofillShow',
+
     'GET /watch/:video_id': 'StreamController.stream'
 
   /***************************************************************************
