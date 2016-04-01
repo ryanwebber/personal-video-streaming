@@ -2,11 +2,11 @@
 define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
     function (React, $, QueuedUploader) {
 
-        var UploadMovieForm = React.createClass({
+        var UploadShowForm = React.createClass({
             mixins: [React.addons.LinkedStateMixin],
             getInitialState: function() {
                 return {
-                    file: null,
+                    files: [],
                     data: {},
                     loading: false
                 };
@@ -26,26 +26,17 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 state.loading = val;
                 this.setState(state);
             },
-            onFileChanged: function(file){
-                file = $(file.target)[0].files[0];
+            onFileChanged: function(files){
+                files = $(file.target)[0].files;
+
+                if(files.count < 1){
+                    return;
+                }
 
                 this.setLoading(true);
-                $.get("/upload/movie/autofill", {
-                    filename: file.name
+                $.get("/upload/show/autofill", {
+                    filename: files[0].name
                 }).done(function(result){
-                    var state = this.state;
-                    var data = {};
-
-                    data.name = result.name || null;
-                    data.year = result.year || null;
-                    data.trakt_id = result.trakt_id || null;
-                    data.poster = result.poster || null;
-                    data.cover = result.cover || null;
-                    data.description = result.description || null;
-
-                    state.data = data;
-                    state.file = file;
-                    this.setState(state);
 
                 }.bind(this)).fail(function(){
                     // Not much to do
@@ -54,7 +45,7 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 }.bind(this));
             },
             submit: function(){
-                var uploader = new QueuedUploader([this.state.file], {
+                var uploader = new QueuedUploader(this.state.files, {
                     url: this.props.url,
                     fileData: function(file){
                         return this.state.data;
@@ -98,12 +89,12 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                     );
                 }else{
                     return(
-                        <input type="file" onChange={this.onFileChanged} />
+                        <input type="file" onChange={this.onFileChanged} multiple="multiple"/>
                     );
                 }
             }
         });
-        return UploadMovieForm;
+        return UploadShowForm;
 
     }
 );
