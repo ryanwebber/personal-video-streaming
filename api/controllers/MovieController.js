@@ -6,5 +6,11 @@
  */
 
 module.exports = {
-
+	updates: function(req, res){
+		if(req.isSocket){
+			Movie.watch(req);
+		}
+		res.send(200);
+	}
 };
+

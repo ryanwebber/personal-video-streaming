@@ -8,9 +8,12 @@ requirejs.config({
     },
 });
 
-require(['jquery', 'react', 'reactdom', 'app/controllers/home/MoviesController', 'app/controllers/home/ShowsController'],
-    function ($, React, ReactDOM, MoviesController, ShowsController) {
+require(['jquery', 'react', 'reactdom',
+    'app/controllers/home/MoviesController',
+    'app/controllers/home/ShowsController'],
+    function ($, React, ReactDOM, MoviesController, ShowsController, ModalController) {
         $(document).ready(function(){
+
             ReactDOM.render(
                 <MoviesController />,
                 document.getElementById('movies')
