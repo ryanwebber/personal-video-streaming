@@ -11,7 +11,12 @@
  		file: {
             type: 'string',
             required: true
-        }
+        },
+        toJSON: function() {
+	    	var obj = this.toObject();
+	        delete obj.file;
+	        return obj;
+	    }
  	}
  };
 

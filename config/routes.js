@@ -43,7 +43,10 @@
     'GET /upload/movie/autofill': 'UploadController.autofillMovie',
     'GET /upload/show/autofill': 'UploadController.autofillShow',
 
-    'GET /watch/:video_id': 'StreamController.stream'
+    'GET /watch/:video_id': 'StreamController.stream',
+
+    'GET /movie/updates': 'MovieController.updates',
+    'GET /show/updates': 'ShowController.updates',
 
   /***************************************************************************
   *                                                                          *

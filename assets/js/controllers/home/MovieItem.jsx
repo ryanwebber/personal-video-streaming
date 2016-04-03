@@ -1,54 +1,97 @@
-define(['react', 'jquery'], 
-    function (React, $) {
+define(['react', 'jquery', 'app/controllers/home/ModalController'], 
+    function (React, $, ModalController) {
 
         var MovieItem = React.createClass({
+            getInitialState: function(){
+                return {
+                    modalOpen: false,
+                    progress: null
+                };
+            },
+            componentDidMount: function() {
+                io.socket.on('upload.progress', this.updateProgress);
+            },
+            componentWillUnmount: function(){
+                io.socket.off('upload.progress', this.updateProgress);
+            },
             linkForMovie: function(movie){
                 var base = "/watch/";
                 return base + movie.video.id;
             },
+            openModal: function(){
+                this.setState({modalOpen: true});
+            },
+            closeModal: function(){
+                this.setState({modalOpen: false});
+            },
+            updateProgress: function(obj){
+                var id = obj.id;
+                var progress = obj.progress;
+                if(id == this.props.movie.id){
+                    this.setState({progress: progress});
+                }
+            },
             render: function(){
                 var movie = this.props.movie;
-                var styles = {
-                    backgroundImage: "url("+movie.cover+")",
-                    backgroundSize: "cover",
-                    border: "1px solid white",
-                    position: "relative",
-                    width: "800px"
-                };
 
-                var trans = {
-                    backgroundColor: "rgba(0,0,0,0.7)"
-                };
+                if(movie.video){
+                    var styles = {
+                        backgroundImage: "url("+movie.cover+")",
+                        backgroundSize: "cover"
+                    };
 
-                return(
-                    <div className="movie-item">
-                        <div id={movie.id} className="modal modal--flat">
-                            <div className="modal-container" style={styles}>
-                                <div className="modal-header" style={trans}>
-                                    <a href="#close" className="modal-close">
-                                        <span className="badge bg--muted">&times;</span>
-                                    </a>
-                                </div>
-                                <div className="modal-body" style={trans}>
+                    return(
+                        <div className="movie-item">
+                            <a onClick={this.openModal}>
+                                <img className="movie-poster" src={movie.poster} />
+                            </a>
+                            <ModalController isOpen={this.state.modalOpen} hideModal={this.closeModal} styles={styles}>
+                                <div className="movie-modal">
+                                    <img className="inline-poster" src={movie.poster} />
                                     <h2 className="movie-name">{movie.name}</h2>
                                     <h3 className="movie-year">({movie.year})</h3>
-                                    <p className="movie-description">
-                                        <img className="inline-poster" src={movie.poster} />
+                                    <hr/><br/>
+                                    <span>Description:</span>
+                                    <p className="movie-description text--justify">
                                         {movie.description}
                                     </p>
                                     <br/><br/>
                                     <div className="center">
-                                        <a href={this.linkForMovie(movie)} className="watch-button center">Watch</a>
+                                        <a href={this.linkForMovie(movie)} className="watch-button center">
+                                            Watch  <i className="fa fa-play-circle"></i>
+                                        </a>
                                     </div>
                                 </div>
+                            </ModalController>
+                        </div>
+                    );
+                }else{
+
+                    if(this.state.progress != null){
+                        var contents = (
+                            <div className="center--all">
+                                <div className="spinner"></div>
+                                <br/>
+                                <span>{this.state.progress}%</span>
+                            </div>
+                        );
+                    }else{
+                        var contents = (
+                            <div className="center--all">
+                                <div className="spinner"></div>
+                            </div>
+                        );
+                    }
+
+                    return(
+                        <div className="movie-item">
+                            <img className="movie-poster" src={movie.poster} />
+                            <div className="movie-placeholder overlay-layer">
+                                {contents}
                             </div>
                         </div>
-                        <a href={"#" + movie.id}>
-                            <img className="movie-poster" src={movie.poster} />
-                        </a>
-                    </div>
-                );
-
+                    );
+                }
             }
         });
         return MovieItem;

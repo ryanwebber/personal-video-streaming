@@ -28,6 +28,8 @@ module.exports = {
             description: description,
             year: year,
         }).exec(function(err, movie){
+            Movie.publishCreate(movie);
+            var progress = null;
             req.file('file').upload({
                 maxBytes: 0
             }, function (err, uploadedFiles) {
@@ -48,6 +50,9 @@ module.exports = {
                                 movie.video = video.id;
                                 movie.save(function(err, obj){
                                     if(!err){
+                                        Movie.publishUpdate(movie.id, {
+                                            video: video
+                                        });
                                         res.send(200, movie);
                                     }else{
                                         res.send(500);
@@ -63,11 +68,23 @@ module.exports = {
                     sails.log.error(err);
                     res.send(503, err);
                 }
+            }).on('progress', function(state){
+                var byteCount = state.stream.byteCount;
+                var written = state.written;
+                var newProgress = Math.floor(100 * (written / byteCount));
+                if(newProgress != progress){
+                    progress = newProgress;
+                    sails.sockets.blast('upload.progress', { 
+                        progress: progress,
+                        id: movie.id
+                    });
+                }
             });
         });
     },
 
     autofillMovie: function(req, res){
+
         var filename = req.param("filename");
         if(!filename){
             res.send(400);
