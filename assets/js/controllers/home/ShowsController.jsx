@@ -24,7 +24,7 @@ define(['react', 'jquery'],
                 }.bind(this)).fail(function(err){
                     this.setState({error: "Couldn't Load Movies"});
                 }.bind(this)).always(function(){
-                    //this.setState({loading: false});
+                    this.setState({loading: false});
                 }.bind(this));
             },
             componentWillUnmount: function(){
@@ -36,27 +36,19 @@ define(['react', 'jquery'],
                 if(this.state.loading === true){
                     return(
                         <div>
-                            <h1>Shows</h1>
-                            <hr/>
-                            <div className="show-container">
+                            <h1 className="page-block">Shows</h1>
+                            <div className="media-container">
                                 <div className="spinner center--all"></div>
                             </div>
                         </div>
                     );
                 }else{
-                    var shows = shows.map(function(show, i){
-                        return(
-                            <a href={this.linkForShow(show)} key={show.id + "-" + i}>
-                                <img className="show-poster" src={show.poster} />
-                            </a>
-                        );
-                    }.bind(this));
+                    var shows = [];
 
                     return(
                         <div>
-                            <h1>Shows  <small>{shows.length} Titles</small></h1>
-                            <hr/>
-                            <div className="show-container">
+                            <h1 className="page-block">Shows  <small>{shows.length} Titles</small></h1>
+                            <div className="media-container">
                                 {shows}
                             </div>
                         </div>

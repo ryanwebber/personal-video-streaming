@@ -41,12 +41,12 @@ define(['react', 'jquery', 'app/controllers/home/ModalController'],
                     };
 
                     return(
-                        <div className="movie-item">
+                        <div className="media-item">
                             <a onClick={this.openModal}>
-                                <img className="movie-poster" src={movie.poster} />
+                                <img className="media-poster" src={movie.poster} />
                             </a>
                             <ModalController isOpen={this.state.modalOpen} hideModal={this.closeModal} styles={styles}>
-                                <div className="movie-modal">
+                                <div className="media-modal movie-modal">
                                     <img className="inline-poster" src={movie.poster} />
                                     <h2 className="movie-name">{movie.name}</h2>
                                     <h3 className="movie-year">({movie.year})</h3>
@@ -84,9 +84,9 @@ define(['react', 'jquery', 'app/controllers/home/ModalController'],
                     }
 
                     return(
-                        <div className="movie-item">
-                            <img className="movie-poster" src={movie.poster} />
-                            <div className="movie-placeholder overlay-layer">
+                        <div className="media-item">
+                            <img className="media-poster" src={movie.poster} />
+                            <div className="media-placeholder overlay-layer">
                                 {contents}
                             </div>
                         </div>

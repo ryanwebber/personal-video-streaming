@@ -54,31 +54,41 @@
 	}
 }
 
-#movies{
+#movies, #shows{
 	@posterWidth: 200px;
 
-	.movie-container{
+	h1{
+		color: @lessLight;
+	}
+
+	.media-container{
 		width: 100%;
 		padding-left: 50px;
 		padding-right: 50px;
 		padding-top: 10px;
 		min-height: @posterWidth * 1.5 + 10;
 		position: relative;
-		background-color: @light;
+		background-color: lighten(@moreDark, 5%);
 		.box-sizing(border-box);
 
-		.movie-item{
+		.media-item{
 			display: inline-block;
 			margin-right: 10px;
 			margin-bottom: 10px;
 			position: relative;
 
-			img.movie-poster{
+			img.media-poster{
 				width: @posterWidth;
 				height: @posterWidth * 1.5;
 			}
 
-			div.movie-placeholder{
+			a:hover{
+				img.media-poster{
+					border: 1px solid @dark;
+				}
+			}
+
+			div.media-placeholder{
 				position: absolute;
 				z-index: 1001;
 				width: @posterWidth;
@@ -88,27 +98,9 @@
 			}
 		}
 
-		.movie-modal{
-			background-color: rgba(0, 0, 0, 0.9);
+		.media-modal{
+			background-color: rgba(0, 0, 0, 0.8);
 			padding: 30px;
-
-			h2.movie-name{
-				color: @lessLight;
-				margin-bottom: 5px;
-			}
-
-			h3.movie-year{
-				color: #fff;
-				margin-top: 5px;
-				margin-bottom: 32px;
-				font-weight: 200;
-			}
-
-			.movie-description{
-				color: @light;
-				font-weight: 100;
-				padding-left: 20px;
-			}
 
 			.watch-button{
 				border-radius: 2px;
@@ -138,27 +130,25 @@
 			}
 		}
 
-		.spinner{
-			margin: 0;
-		}
-	}
-}
+		.movie-modal{
 
-#shows{
-	@posterWidth: 200px;
+			h2.movie-name{
+				color: @lessLight;
+				margin-bottom: 5px;
+			}
 
-	.show-container{
-		width: @posterWidth * 4 + 30;
-		margin-left: auto;
-		margin-right: auto;
-		min-height: @posterWidth *1.5 + 10;
-		position: relative;
+			h3.movie-year{
+				color: #fff;
+				margin-top: 5px;
+				margin-bottom: 32px;
+				font-weight: 200;
+			}
 
-		img.show-poster{
-			width: @posterWidth;
-			height: @posterWidth * 1.5;
-			margin-right: 10px;
-			margin-bottom: 10px;
+			.movie-description{
+				color: @light;
+				font-weight: 100;
+				padding-left: 20px;
+			}
 		}
 
 		.spinner{

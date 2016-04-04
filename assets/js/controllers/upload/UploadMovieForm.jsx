@@ -64,6 +64,9 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                     },
                     onSuccess: function(){
                         console.log("SUCCESS!");
+                    }.bind(this),
+                    onProgress: function(prog){
+                        console.log(prog.loaded + "/" + prog.total, prog.percent+"%");
                     }
                 });
 

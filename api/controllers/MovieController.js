@@ -9,6 +9,7 @@ module.exports = {
 	updates: function(req, res){
 		if(req.isSocket){
 			Movie.watch(req);
+			Movie.subscribe(req, req.param("ids"));
 		}
 		res.send(200);
 	}

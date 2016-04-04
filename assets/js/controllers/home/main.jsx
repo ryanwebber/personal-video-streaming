@@ -10,9 +10,15 @@ requirejs.config({
 
 require(['jquery', 'react', 'reactdom', 
     'app/controllers/home/MoviesController', 
-    'app/controllers/home/ShowsController'], 
-    function ($, React, ReactDOM, MoviesController, ShowsController, ModalController) {
+    'app/controllers/home/ShowsController',
+    'app/controllers/ShowBackdrop'], 
+    function ($, React, ReactDOM, MoviesController, ShowsController, ShowBackdrop) {
         $(document).ready(function(){
+
+            ReactDOM.render(
+                <ShowBackdrop />,
+                document.getElementById('backdrop')
+            );
 
             ReactDOM.render(
                 <MoviesController />,
