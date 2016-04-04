@@ -32,7 +32,7 @@
   *                                                                          *
   ***************************************************************************/
 
-    '/': {view: 'homepage'},
+    '/': 'HomeController.home',
 
     'GET /upload/show': {view: 'upload/show'},
     'GET /upload/movie': {view: 'upload/movie'},

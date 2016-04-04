@@ -12,15 +12,42 @@ html,body{
 }
 
 body{
-	padding-bottom: 160px;
+	min-height: 100%;
 }
 
 :root{
 	overflow-y: auto !important;
 }
 
-@navHeight: 120px;
 nav{
+	background-color: @dark;
+	width:100%;
+	position: relative;
+	display: block;
+
+	div.nav-container{
+		margin-left: auto;
+		margin-right: auto;
+		width: @pageWidth;
+		height: 100%;
+		position: relative;
+
+		.nav-item{
+			display: inline-block;
+		}
+
+		.nav-left{
+			float:left;
+		}
+
+		.nav-right{
+			float: right;
+		}
+	}
+}
+
+nav.header{
+	@navHeight: 120px;
 
 	background-color: @dark;
 	width:100%;
@@ -46,6 +73,8 @@ nav{
 		h1{
 			line-height: @navHeight;
 			margin: 0;
+			color: @light;
+			font-weight: 100;
 		}
 
 		input{
@@ -69,17 +98,41 @@ nav{
 			border-right: 1px dashed @accent;
 			text-align: center;
 		}
+	}
+}
 
-		.nav-item{
-			display: inline-block;
+nav.footer{
+	@navHeight: 40px;
+
+	display: block;
+	line-height: @navHeight;
+	margin-top: 160px;
+	border-top: 1px solid @theme;
+
+	span.footer-text{
+		color: #888;
+		font-weight: 100;
+		font-size: 12px;
+		line-height: @navHeight;
+		i{
+			vertical-align: middle;
 		}
+	}
 
-		.nav-left{
-			float:left;
-		}
+	.progress{
+		@height: 12px;
 
-		.nav-right{
-			float: right;
+		margin-top: (@navHeight - @height)/2;
+		margin-bottom: 0;
+		width: 200px;
+		display: inline-block;
+		background-color: @lessDark;
+		height: @height;
+
+		span{
+			color: @dark;
+			font-size: 10px;
+			background-color: @accent;
 		}
 	}
 }
