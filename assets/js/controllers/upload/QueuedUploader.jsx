@@ -39,6 +39,7 @@ define(['react', 'jquery'],
 				beforeFileUpload: defaults(options.beforeFileUpload, noop).bind(this),
 				onFileComplete: defaults(options.onFileComplete, noop).bind(this),
 				onSuccess: defaults(options.onSuccess, noop).bind(this),
+				onProgress: defaults(options.onProgress, noop).bind(this),
 			}
 
 			this.getFiles = function(){
@@ -60,8 +61,30 @@ define(['react', 'jquery'],
 				    contentType: false,
 				    processData: false,
 				    type: 'POST',
-				    success: noop
+				    success: noop,
+				    xhr: function() {
+			            var myXhr = $.ajaxSettings.xhr();
+			            if(myXhr.upload){
+			                myXhr.upload.addEventListener('progress',this.onProgress.bind(this), false); // For handling the progress of the upload
+			            }
+			            return myXhr;
+			        }.bind(this),
 				});
+			}
+
+			this.onProgress = function(e){
+				if(e.lengthComputable){
+					var total = e.total;
+					var loaded = e.loaded;
+					var progress = e.loaded/e.total;
+					var percent = Math.floor(progress * 100);
+					this.options["onProgress"]({
+						total: total,
+						loaded: loaded,
+						progress: progress,
+						percent: percent
+					});
+			    }
 			}
 
 			this.submit = function(){

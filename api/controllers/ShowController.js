@@ -11,6 +11,7 @@ module.exports = {
 			Show.watch(req);
 			Season.watch(req);
 			Episode.watch(req);
+			Episode.subscribe(req, req.param("ids"));
 		}
 		res.send(200);
 	}

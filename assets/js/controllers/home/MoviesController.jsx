@@ -15,13 +15,16 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                 this.setState(state);
             },
             update: function(event){
+                console.log(event);
                 if(event.verb == "created"){
+                    console.log("create")
                     var newMovie = event.data;
                     newMovie.id = event.id;
                     var movies = this.state.movies;
                     movies.push(newMovie);
                     this.setState({movies: movies});
                 }else if(event.verb == "updated"){
+                    console.log("update")
                     var id = event.id;
                     var movies = this.state.movies;
                     for(m in movies){
@@ -40,14 +43,22 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                 // TODO stuff
                 $.get("/movie").done(function(movies){
                     this.setState({movies: movies});
+                    var data = {
+                        ids: movies.reduce(function(arr, item){
+                            if(!item.video){
+                                arr.push(item.id);
+                            }
+                            return arr;
+                        }, [])
+                    };
+                    io.socket.get("/movie/updates", data, function(){
+                        console.log("subscribed")
+                        io.socket.on('movie', this.update);
+                    }.bind(this));
                 }.bind(this)).fail(function(err){
                     this.setState({error: "Couldn't Load Movies"});
                 }.bind(this)).always(function(){
                     this.setState({loading: false});
-                }.bind(this));
-
-                io.socket.get("/movie/updates", function(){
-                    io.socket.on('movie', this.update);
                 }.bind(this));
             },
             componentWillUnmount: function(){
@@ -60,7 +71,7 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                     return(
                         <div>
                             <h1 className="page-block">Movies</h1>
-                            <div className="movie-container">
+                            <div className="media-container">
                                 <div className="spinner center--all"></div>
                             </div>
                         </div>
@@ -75,7 +86,7 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                     return(
                         <div>
                             <h1 className="page-block">Movies  <small>{movies.length} Titles</small></h1>
-                            <div className="movie-container">
+                            <div className="media-container">
                                 {movies}
                             </div>
                         </div>
