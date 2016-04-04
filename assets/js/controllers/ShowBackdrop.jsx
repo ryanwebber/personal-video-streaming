@@ -20,14 +20,18 @@ define(['react', 'jquery'],
         	],
             getInitialState: function() {
                 return {
-                	picture: this.randomPicture()
+                	picture: this.randomPicture(),
                 };
             },
             randomPicture: function(){
                 return this.images[Math.floor(Math.random()*this.images.length)];
             },
             linkForPicture: function(imageName){
-            	return "/images/covers/" + imageName;
+                if(this.props.type === "banner"){
+                    return "/images/banners/" + imageName;
+                }else{
+                    return "/images/covers/" + imageName;
+                }
             },
             render: function(){
             	var style = {

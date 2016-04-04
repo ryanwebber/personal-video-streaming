@@ -16,7 +16,7 @@ require(['jquery', 'react', 'reactdom',
         $(document).ready(function(){
 
             ReactDOM.render(
-                <ShowBackdrop />,
+                <ShowBackdrop type="banner" />,
                 document.getElementById('backdrop')
             );
 
