@@ -87,7 +87,7 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                     );
                 }else if(this.state.file){
                     return(
-                        <div>
+                        <div className="upload-form">
                             <form>
                                 <input type="text" valueLink={this.makeValueLink('name')} placeholder="Name" />
                                 <input type="text" valueLink={this.makeValueLink('year')} placeholder="Year" />
@@ -101,7 +101,10 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                     );
                 }else{
                     return(
-                        <input type="file" onChange={this.onFileChanged} />
+                        <div className="center--all">
+                            <input id="file" type="file" className="inputfile" onChange={this.onFileChanged} />
+                            <label htmlFor="file"><i className="fa fa-upload"></i> Upload Movie...</label>
+                        </div>
                     );
                 }
             }

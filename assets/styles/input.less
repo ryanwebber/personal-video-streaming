@@ -3,3 +3,40 @@ input.dark{
 	background-color: @dark;
 	color: @light;
 }
+
+input.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+	border-radius: 2px;
+	background-color: rgba(0, 0, 0, 0.4);
+	border: 1px solid @accent;
+	color: @accent;
+	font-size: 24px;
+	line-height: 100%;
+	font-weight: 100;
+	padding: 15px 45px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+
+    i{
+    	margin-right: 10px;
+    }
+}
+
+.inputfile + label:hover {
+    border: 1px solid lighten(@accent, 6%);
+    color: lighten(@accent, 6%);
+}
