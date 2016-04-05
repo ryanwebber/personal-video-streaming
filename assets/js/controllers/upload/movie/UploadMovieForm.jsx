@@ -1,6 +1,6 @@
 
-define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'], 
-    function (React, $, QueuedUploader) {
+define(['react', 'jquery', 'app/controllers/upload/QueuedUploader', 'app/controllers/home/ModalController'], 
+    function (React, $, QueuedUploader, ModalController) {
 
         var UploadMovieForm = React.createClass({
             mixins: [React.addons.LinkedStateMixin],
@@ -8,7 +8,8 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 return {
                     file: null,
                     data: {},
-                    loading: false
+                    loading: false,
+                    upload: null
                 };
             },
             makeValueLink: function (key) {
@@ -63,11 +64,21 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                         console.log("Completed:", file.name);
                     },
                     onSuccess: function(){
-                        console.log("SUCCESS!");
+                        this.setState({
+                            upload: {
+                                progress: 100,
+                                complete: true
+                            }
+                        });
                     }.bind(this),
                     onProgress: function(prog){
-                        console.log(prog.loaded + "/" + prog.total, prog.percent+"%");
-                    }
+                        this.setState({
+                            upload: {
+                                progress: prog.percent,
+                                complete: false
+                            }
+                        });
+                    }.bind(this)
                 });
 
                 uploader.submit();
@@ -83,20 +94,61 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
 
                 if(this.state.loading === true){
                     return(
-                        <p>Loading...</p>
+                        <div className="spinner center--all"></div>
+                    );
+                }else if(this.state.upload){
+                    var style = {
+                        width: this.state.upload.progress + "%"
+                    };
+                    var size = {
+                        width: "400px",
+                        maxWidth: "90%"
+                    };
+                    if(this.state.upload.complete){
+                        var text = "Done";
+                        var cl = "progress center--all";
+                    }else{
+                        var text = style.width;
+                        var cl = "progress progress--striped center--all progress--animate";
+                    }
+                    return(
+                        <div className={cl} style={size}>
+                            <span style={style}>{text}</span>
+                        </div>
                     );
                 }else if(this.state.file){
                     return(
                         <div className="upload-form">
-                            <form>
-                                <input type="text" valueLink={this.makeValueLink('name')} placeholder="Name" />
-                                <input type="text" valueLink={this.makeValueLink('year')} placeholder="Year" />
-                                <input type="text" valueLink={this.makeValueLink('trakt_id')} placeholder="Trakt ID" />
-                                <input type="text" valueLink={this.makeValueLink('poster')} placeholder="Poster URL" />
-                                <input type="text" valueLink={this.makeValueLink('cover')} placeholder="Cover URL" />
-                                <input type="text" valueLink={this.makeValueLink('description')} placeholder="Description" />
-                            </form>
-                            <button onClick={this.submit}>Upload</button>
+                            <div className="page-block">
+                                <h1>Movie Meta Data</h1>
+                                <form>
+                                    <p>
+                                        <label>Movie Title:</label>
+                                        <input type="text" valueLink={this.makeValueLink('name')} placeholder="Movie Title" />
+                                    </p>
+                                    <p>
+                                        <label>Year:</label>
+                                        <input type="text" valueLink={this.makeValueLink('year')} placeholder="Year" />
+                                    </p>
+                                    <p>
+                                        <label>Trakt ID:</label>
+                                        <input type="text" valueLink={this.makeValueLink('trakt_id')} placeholder="Trakt ID" />
+                                    </p>
+                                    <p>
+                                        <label>Poster URL:</label>
+                                        <input type="text" valueLink={this.makeValueLink('poster')} placeholder="Poster URL" />
+                                    </p>
+                                    <p>
+                                        <label>Cover URL:</label>
+                                        <input type="text" valueLink={this.makeValueLink('cover')} placeholder="Cover URL" />
+                                    </p>
+                                    <p>
+                                        <label>Description:</label>
+                                        <textarea type="text" valueLink={this.makeValueLink('description')} placeholder="Description" rows="7"/>
+                                    </p>
+                                </form>
+                                <button onClick={this.submit}>Upload</button>
+                            </div>
                         </div>
                     );
                 }else{

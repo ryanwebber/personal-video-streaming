@@ -43,7 +43,9 @@ define(['react', 'jquery'],
                 return(
                 	<div className="full">
                 		<div className="full" style={style}></div>
-                		<div className="overlay-layer"></div>
+                		<div className="overlay-layer">
+                            {this.props.children}
+                        </div>
                 	</div>
                 );
             }
