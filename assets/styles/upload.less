@@ -1,8 +1,41 @@
 
-upload-form{
-	margin-top: 240px;
+.upload-form{
 	position: relative;
-	background-color: @dark;
-	border: 1px solid @light;
+	background-color: @moreDark;
 	padding: 20px;
+
+	width: 100%;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	min-height: 100%;
+
+	form{
+
+		label{
+			text-align: left;
+			margin-bottom: 5px;
+		}
+
+		input, textarea{
+			background-color: @lessDark;
+			color: @light;
+		}
+	}
+
+	button{
+		border-radius: 2px;
+		background-color: @theme;
+		color: #fff;
+		font-size: 24px;
+		line-height: 100%;
+		font-weight: 100;
+		padding: 5px 25px 5px 25px;
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+
+		&:hover{
+			background-color: darken(@theme, 5%);
+		}
+	}
 }
