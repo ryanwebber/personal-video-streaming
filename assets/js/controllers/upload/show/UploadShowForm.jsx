@@ -8,7 +8,8 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 return {
                     files: [],
                     data: {},
-                    loading: false
+                    loading: false,
+                    upload: null
                 };
             },
             makeValueLink: function (key) {
@@ -27,18 +28,26 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 this.setState(state);
             },
             onFileChanged: function(files){
-                files = $(file.target)[0].files;
+                obj = $(files.target)[0].files;
 
-                if(files.count < 1){
+                if(obj.length < 1){
                     return;
+                }
+
+                files = []
+                for(var i=0; i<obj.length;i++){
+                    files.push(obj[i]);
                 }
 
                 this.setLoading(true);
                 $.get("/upload/show/autofill", {
-                    filename: files[0].name
+                    "filenames[]": files.map(function(file){return file.name;})
                 }).done(function(result){
-
-                }.bind(this)).fail(function(){
+                    this.setState({
+                        data: result,
+                        files: files
+                    });
+                }.bind(this)).fail(function(err){
                     // Not much to do
                 }).always(function(){
                     this.setLoading(false);
@@ -48,14 +57,50 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 var uploader = new QueuedUploader(this.state.files, {
                     url: this.props.url,
                     fileData: function(file){
-                        return this.state.data;
+                        var episode = this.state.data.episodes[file.name];
+                        return {
+                            season: this.state.data.season,
+
+                            show_cover: this.state.data.cover,
+                            show_description: this.state.data.description,
+                            show_name: this.state.data.name,
+                            show_poster: this.state.data.poster,
+                            show_trakt_id: this.state.data.trakt_id,
+
+                            episode_name: episode.name,
+                            episode_description: episode.description,
+                            episode_trakt_id: episode.trakt_id,
+                            episode_screenshot: episode.screenshot,
+                            episode_number: episode.episode
+
+                        };
                     }.bind(this),
                     onFileComplete: function(file){
                         console.log("Completed:", file.name);
                     },
+                    onFileComplete: function(file){
+                        console.log("Completed:", file.name);
+                    },
                     onSuccess: function(){
-                        console.log("SUCCESS!");
-                    }
+                        this.setState({
+                            upload: {
+                                progress: 100,
+                                complete: true
+                            }
+                        });
+                    }.bind(this),
+                    onProgress: function(prog){
+                        var updates = this.state.upload;
+                        updates = updates || {};
+
+                        updates[prog.file.name] = {
+                            progress: prog.percent,
+                            complete: false
+                        }
+                        this.setState({
+                            upload: updates
+                        });
+                    }.bind(this)
                 });
 
                 uploader.submit();
@@ -71,25 +116,70 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
 
                 if(this.state.loading === true){
                     return(
-                        <p>Loading...</p>
+                        <div className="spinner center--all"></div>
                     );
-                }else if(this.state.file){
+                }else if(this.state.upload){
+                    return (null);
+                    var style = {
+                        width: this.state.upload.progress + "100%"
+                    };
+                    var size = {
+                        width: "400px",
+                        maxWidth: "90%"
+                    };
+                    if(this.state.upload.complete){
+                        var text = "Done";
+                        var cl = "progress center--all";
+                    }else{
+                        var text = style.width;
+                        var cl = "progress progress--striped center--all progress--animate";
+                    }
                     return(
-                        <div>
-                            <form>
-                                <input type="text" valueLink={this.makeValueLink('name')} placeholder="Name" />
-                                <input type="text" valueLink={this.makeValueLink('year')} placeholder="Year" />
-                                <input type="text" valueLink={this.makeValueLink('trakt_id')} placeholder="Trakt ID" />
-                                <input type="text" valueLink={this.makeValueLink('poster')} placeholder="Poster URL" />
-                                <input type="text" valueLink={this.makeValueLink('cover')} placeholder="Cover URL" />
-                                <input type="text" valueLink={this.makeValueLink('description')} placeholder="Description" />
-                            </form>
-                            <button onClick={this.submit}>Upload</button>
+                        <div className={cl} style={size}>
+                            <span style={style}>{text}</span>
+                        </div>
+                    );
+                }else if(this.state.files.length){
+                    return(
+                        <div className="upload-form">
+                            <div className="page-block">
+                                <h1>Show Meta Data</h1>
+                                <form>
+                                    <p>
+                                        <label>Show Title:</label>
+                                        <input type="text" valueLink={this.makeValueLink('name')} placeholder="Movie Title" />
+                                    </p>
+                                    <p>
+                                        <label>Season:</label>
+                                        <input type="text" valueLink={this.makeValueLink('season')} placeholder="Season" />
+                                    </p>
+                                    <p>
+                                        <label>Trakt ID:</label>
+                                        <input type="text" valueLink={this.makeValueLink('trakt_id')} placeholder="Trakt ID" />
+                                    </p>
+                                    <p>
+                                        <label>Poster URL:</label>
+                                        <input type="text" valueLink={this.makeValueLink('poster')} placeholder="Poster URL" />
+                                    </p>
+                                    <p>
+                                        <label>Cover URL:</label>
+                                        <input type="text" valueLink={this.makeValueLink('cover')} placeholder="Cover URL" />
+                                    </p>
+                                    <p>
+                                        <label>Description:</label>
+                                        <textarea type="text" valueLink={this.makeValueLink('description')} placeholder="Description" rows="7"/>
+                                    </p>
+                                </form>
+                                <button onClick={this.submit}>Upload</button>
+                            </div>
                         </div>
                     );
                 }else{
                     return(
-                        <input type="file" onChange={this.onFileChanged} multiple="multiple"/>
+                        <div className="center--all">
+                            <input id="file" type="file" className="inputfile" onChange={this.onFileChanged} multiple="multiple"/>
+                            <label htmlFor="file"><i className="fa fa-upload"></i> Upload Show Episodes...</label>
+                        </div>
                     );
                 }
             }

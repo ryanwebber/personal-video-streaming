@@ -16,7 +16,7 @@ module.exports = {
         var description = req.body['description'];
         var year = req.body['year'];
 
-        if(trakt_id === null || trakt_id === undefined || !name || !year){
+        if(!name || !year){
             return res.send(400)
         }
 
@@ -117,30 +117,84 @@ module.exports = {
     },
 
     uploadShow: function (req, res) {
-        console.log('hey')
-        res.send(200);
+        console.log("wtf")
+
+        var name = req.body['show_name'];
+        var trakt_id = req.body['show_trakt_id'];
+        var poster = req.body['show_poster'];
+        var cover = req.body['show_cover'];
+        var description = req.body['show_description'];
+        var season = req.body['season'];
+
+        if(!name || !season){
+            return res.send(400);
+        }
+
+        console.log("wtf2")
+
+        var episode_name = req.body['episode_name'];
+        var episode_trakt_id = req.body['episode_trakt_id'];
+        var episode_screenshot = req.body['episode_screenshot'];
+        var episode_description = req.body['episode_description'];
+        var episode_number = req.body['episode_number'];
+
+        if(!episode_name || !episode_number){
+            return res.send(400);
+        }
+
+        console.log("wtf3")
+
+        Show.findOrCreate({
+            name: name,
+            trakt_id,
+            poster: poster,
+            cover: cover,
+            description: description,
+        }).exec(function(err, show){
+            if(!err && show){
+                console.log(show);
+                req.file('file').upload({
+                    maxBytes: 0
+                }, function (err, uploadedFiles) {
+                    if(!err && uploadedFiles.length > 0){
+                        res.send(200);
+                    }else{
+                        sails.log.error(err);
+                        res.send(503, err);
+                    }
+                }).on('progress', function(state){
+
+                });
+            }else{
+                return res.send(503, err);
+            }
+        });
     },
 
     autofillShow: function(req, res){
-        var filename = req.param("filename");
-        if(!filename){
+        var filenames = req.param("filenames");
+        if(!filenames){
             res.send(400);
         }else{
-            var parsed = ptn(filename);
+            var parsed = []
+            for(var file in filenames){
+                var p = ptn(filenames[file]);
+                p.filename = filenames[file];
+                parsed.push(p);
+            }
 
-            if(!parsed.title || !parsed.season){
+            if(parsed.length < 1){
+                return res.json({});
+            }
+
+            var example = parsed[0];
+
+            if(!example.title || !example.season){
                 return res.json({});
             }else{
-                var promise;
-                if(parsed.year){
-                    promise = trakt.searchShow(parsed.title, parsed.year);
-                }else{
-                    promise = trakt.searchShow(parsed.title);
-                }
-
-                promise.then(function(results){
+                var promise = trakt.searchShow(example.title).then(function(results){
                     var show = results[0].show;
-                    return trakt.season(show.ids.trakt, parsed.season).then(function(season){
+                    return trakt.season(show.ids.trakt, example.season).then(function(season){
 			var reduced = season.map(function(item){
 				return {
 					name: item.title,
@@ -150,13 +204,26 @@ module.exports = {
 					screenshot: item.images.screenshot.medium
 				};
 			});
+
+                        var results = {};
+                        for(var given in parsed){
+                            var preFilled = parsed[given];
+                            var filled = reduced.find(function(elem){
+                                return elem.episode === preFilled.episode;
+                            });
+                            if(filled){
+                                results[preFilled.filename] = filled;
+                            }
+                        }
+
                         res.json({
 				name: show.title,
 				trakt_id: show.ids.trakt,
 				description: show.overview,
 				poster: show.images.poster.thumb,
 				cover: show.images.fanart.medium,
-				episodes: reduced
+                            season: example.season,
+				episodes: results
                         });
                     }).catch(function(err){
 			sails.log.error(err);

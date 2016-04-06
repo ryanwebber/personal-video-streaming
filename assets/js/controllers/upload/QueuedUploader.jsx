@@ -65,20 +65,21 @@ define(['react', 'jquery'],
 				    xhr: function() {
 			            var myXhr = $.ajaxSettings.xhr();
 			            if(myXhr.upload){
-			                myXhr.upload.addEventListener('progress',this.onProgress.bind(this), false); // For handling the progress of the upload
+			                myXhr.upload.addEventListener('progress',this.onProgress.bind(this, file), false); // For handling the progress of the upload
 			            }
 			            return myXhr;
 			        }.bind(this),
 				});
 			}
 
-			this.onProgress = function(e){
+			this.onProgress = function(file, e){
 				if(e.lengthComputable){
 					var total = e.total;
 					var loaded = e.loaded;
 					var progress = e.loaded/e.total;
 					var percent = Math.floor(progress * 100);
 					this.options["onProgress"]({
+						file: file,
 						total: total,
 						loaded: loaded,
 						progress: progress,
