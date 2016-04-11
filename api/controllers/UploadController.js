@@ -124,9 +124,9 @@ module.exports = {
         var poster = req.body['show_poster'];
         var cover = req.body['show_cover'];
         var description = req.body['show_description'];
-        var season = req.body['season'];
+        var seasonNumber = req.body['season'];
 
-        if(!name || !season){
+        if(!name || !seasonNumber){
             return res.send(400);
         }
 
@@ -153,17 +153,73 @@ module.exports = {
         }).exec(function(err, show){
             if(!err && show){
                 console.log(show);
-                req.file('file').upload({
-                    maxBytes: 0
-                }, function (err, uploadedFiles) {
-                    if(!err && uploadedFiles.length > 0){
-                        res.send(200);
+
+                Season.findOrCreate({
+                    Show: show,
+                    season: seasonNumber
+                }).exec(function(err, season){
+                    if(!err && season){
+                        Show.create({
+                            name: episode_name,
+                            trakt_id: episode_trakt_id,
+                            screenshot: episode_screenshot,
+                            description: episode_description,
+                            episodeNumber: episode_number,
+                            seasonNumber: seasonNumber,
+                            season: season,
+                            show: show
+                        }).exec(function(err, episode)){
+                            if(!err && episode){
+                                req.file('file').upload({
+                                    maxBytes: 0
+                                }, function (err, uploadedFiles) {
+                                    if(!err && uploadedFiles.length > 0){
+
+                                        var filename = uploadedFiles[0].filename;
+                                        var filePath = uploadedFiles[0].fd
+
+                                        var extension = filename.split('.').pop();
+                                        var newFileName = name.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_(' + episode.sXeX() + ').' + extension;
+                                        var newPath = path.join(base_path, newFileName);
+                                        fs.rename(filePath, newPath, function(err){
+
+                                            if(!err){
+                                                Video.create({
+                                                    file: newPath
+                                                }).exec(function(err, video){
+                                                    episode.video = video.id;
+                                                    episode.save(function(err, obj){
+                                                        if(!err){
+                                                            Episode.publishUpdate(episode.id, {
+                                                                video: video
+                                                            });
+                                                            res.send(200, episode);
+                                                        }else{
+                                                            res.send(500);
+                                                        }
+                                                    });
+                                                });
+                                            }else{
+                                                sails.log.error(err);
+                                                res.send(500);
+                                            }
+                                        });
+                                    }else{
+                                        sails.log.error(err);
+                                        res.send(503, err);
+                                    }
+                                }).on('progress', function(state){
+
+                                });
+                            }else{
+                                sails.log.error(err);
+                                res.send(500);
+                            }
+                        }
                     }else{
                         sails.log.error(err);
-                        res.send(503, err);
+                        res.send(500);
                     }
-                }).on('progress', function(state){
-
                 });
             }else{
                 return res.send(503, err);
