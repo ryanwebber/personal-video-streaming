@@ -5,7 +5,7 @@ var path = require('path');
 var ptn = require('parse-torrent-name');
 var trakt = require('trakt-api')(sails.config.trakt_api_key, {extended: "full,images"});
 
-var base_path = '/data/media'
+var base_path = '/data/media';
 
 module.exports = {
     uploadMovie: function (req, res) {
@@ -17,7 +17,7 @@ module.exports = {
         var year = req.body['year'];
 
         if(!name || !year){
-            return res.send(400)
+            return res.send(400);
         }
 
         Movie.create({
@@ -117,7 +117,6 @@ module.exports = {
     },
 
     uploadShow: function (req, res) {
-        console.log("wtf")
 
         var name = req.body['show_name'];
         var trakt_id = req.body['show_trakt_id'];
@@ -130,8 +129,6 @@ module.exports = {
             return res.send(400);
         }
 
-        console.log("wtf2")
-
         var episode_name = req.body['episode_name'];
         var episode_trakt_id = req.body['episode_trakt_id'];
         var episode_screenshot = req.body['episode_screenshot'];
@@ -141,8 +138,6 @@ module.exports = {
         if(!episode_name || !episode_number){
             return res.send(400);
         }
-
-        console.log("wtf3")
 
         Show.findOrCreate({
             name: name,
@@ -155,11 +150,11 @@ module.exports = {
                 console.log(show);
 
                 Season.findOrCreate({
-                    Show: show,
-                    season: seasonNumber
+                    show: show,
+                    seasonNumber: seasonNumber
                 }).exec(function(err, season){
                     if(!err && season){
-                        Show.create({
+                        Episode.create({
                             name: episode_name,
                             trakt_id: episode_trakt_id,
                             screenshot: episode_screenshot,
@@ -168,7 +163,7 @@ module.exports = {
                             seasonNumber: seasonNumber,
                             season: season,
                             show: show
-                        }).exec(function(err, episode)){
+                        }).exec(function(err, episode){
                             if(!err && episode){
                                 req.file('file').upload({
                                     maxBytes: 0
@@ -215,13 +210,14 @@ module.exports = {
                                 sails.log.error(err);
                                 res.send(500);
                             }
-                        }
+                        });
                     }else{
                         sails.log.error(err);
                         res.send(500);
                     }
                 });
             }else{
+                sails.log.error(err);
                 return res.send(503, err);
             }
         });
@@ -251,15 +247,15 @@ module.exports = {
                 var promise = trakt.searchShow(example.title).then(function(results){
                     var show = results[0].show;
                     return trakt.season(show.ids.trakt, example.season).then(function(season){
-                    	var reduced = season.map(function(item){
-                    		return {
-                    			name: item.title,
-                    			episode: item.number,
-                    			trakt_id: item.ids.trakt,
-                    			description: item.overview,
-                    			screenshot: item.images.screenshot.medium
-                    		};
-                    	});
+                        var reduced = season.map(function(item){
+                            return {
+                                name: item.title,
+                                episode: item.number,
+                                trakt_id: item.ids.trakt,
+                                description: item.overview,
+                                screenshot: item.images.screenshot.medium
+                            };
+                        });
 
                         var results = {};
                         for(var given in parsed){
@@ -273,16 +269,16 @@ module.exports = {
                         }
 
                         res.json({
-                        	name: show.title,
-                        	trakt_id: show.ids.trakt,
-                        	description: show.overview,
-                        	poster: show.images.poster.thumb,
-                        	cover: show.images.fanart.medium,
+                            name: show.title,
+                            trakt_id: show.ids.trakt,
+                            description: show.overview,
+                            poster: show.images.poster.thumb,
+                            cover: show.images.fanart.medium,
                             season: example.season,
-                        	episodes: results
+                            episodes: results
                         });
                     }).catch(function(err){
-                    	sails.log.error(err);
+                        sails.log.error(err);
                         res.json({});
                     })
                 }).catch(function(err){

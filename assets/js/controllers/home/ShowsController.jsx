@@ -1,5 +1,5 @@
-define(['react', 'jquery'], 
-    function (React, $) {
+define(['react', 'jquery', 'app/controllers/home/ShowItem'], 
+    function (React, $, ShowItem) {
 
         var ShowsController = React.createClass({
             getInitialState: function() {
@@ -17,12 +17,29 @@ define(['react', 'jquery'],
             linkForShow: function(show){
                 return "#";
             },
+            update: function(event){
+                if(event.verb == "created"){
+                    var newShow = event.data;
+                    newShow.id = event.id;
+                    var show = this.state.shows;
+                    shows.push(newShow);
+                    this.setState({shows: shows});
+                }
+            },
             componentDidMount: function() {
                 // TODO stuff
                 $.get("/show").done(function(shows){
                     this.setState({shows: shows});
+                    var data = {
+                        ids: shows.map(function(show){
+                            return show.id
+                        })
+                    };
+                    io.socket.get("/show/updates", data, function(){
+                        io.socket.on('show', this.update);
+                    }.bind(this));
                 }.bind(this)).fail(function(err){
-                    this.setState({error: "Couldn't Load Movies"});
+                    this.setState({error: "Couldn't Load Shows"});
                 }.bind(this)).always(function(){
                     this.setState({loading: false});
                 }.bind(this));
@@ -43,7 +60,11 @@ define(['react', 'jquery'],
                         </div>
                     );
                 }else{
-                    var shows = [];
+                    var shows = shows.map(function(show, i){
+                        return(
+                            <ShowItem show={show} key={show.id}/>
+                        );
+                    }.bind(this));
 
                     return(
                         <div>

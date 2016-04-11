@@ -14,6 +14,6 @@ module.exports = {
 			Episode.subscribe(req, req.param("ids"));
 		}
 		res.send(200);
-	}
+	},
 };
 
