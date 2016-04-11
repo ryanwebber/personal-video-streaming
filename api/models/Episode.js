@@ -5,8 +5,9 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
+ import * as fmt from 'show-episode-format';
+
  module.exports = {
- 	autoPK: false,
  	attributes: {
  		name: {
  			type: 'string',
@@ -14,8 +15,6 @@
  		},
  		trakt_id: {
  			type: 'integer',
- 			required: true,
- 			primaryKey: true
  		},
  		screenshot: {
  			type: 'string'
@@ -34,8 +33,17 @@
  		season: {
  			model: 'season'
  		},
+ 		show: {
+ 			model: 'show'
+ 		},
  		video: {
  			model: 'video'
+ 		},
+ 		sXeX: function(){
+ 			return fmt.formatEpisodeRelease({
+ 				season: this.seasonNumber,
+ 				episode: this.episodeNumber
+ 			});
  		}
  	}
  };
