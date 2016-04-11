@@ -5,7 +5,7 @@
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
- import * as fmt from 'show-episode-format';
+var fmt = require('show-episode-format');
 
  module.exports = {
 	attributes: {
@@ -44,6 +44,12 @@
 				season: this.seasonNumber,
 				episode: this.episodeNumber
 			});
-		}
+		},
+		toJSON: function() {
+			var obj = this.toObject();
+			obj.sXeX = this.sXeX();
+			return obj;
+	    }
 	}
  };
+

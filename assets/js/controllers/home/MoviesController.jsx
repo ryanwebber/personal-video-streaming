@@ -15,16 +15,13 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                 this.setState(state);
             },
             update: function(event){
-                console.log(event);
                 if(event.verb == "created"){
-                    console.log("create")
                     var newMovie = event.data;
                     newMovie.id = event.id;
                     var movies = this.state.movies;
                     movies.push(newMovie);
                     this.setState({movies: movies});
                 }else if(event.verb == "updated"){
-                    console.log("update")
                     var id = event.id;
                     var movies = this.state.movies;
                     for(m in movies){
@@ -52,7 +49,6 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                         }, [])
                     };
                     io.socket.get("/movie/updates", data, function(){
-                        console.log("subscribed")
                         io.socket.on('movie', this.update);
                     }.bind(this));
                 }.bind(this)).fail(function(err){
@@ -79,7 +75,7 @@ define(['react', 'jquery', 'app/controllers/home/MovieItem'],
                 }else{
                     var movies = movies.map(function(movie, i){
                         return(
-                            <MovieItem movie={movie} key={movie.id + "-" + i}/>
+                            <MovieItem movie={movie} key={movie.id}/>
                         );
                     }.bind(this));
 
