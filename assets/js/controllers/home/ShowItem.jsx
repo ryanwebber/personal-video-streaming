@@ -95,7 +95,12 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                         prevArrow: LeftCarouselButton,
 				    };
 
-                    var episodeItems = this.state.seasons[this.state.activeSeason].episodes.map(function(episode){
+                    var episodes_unsorted = this.state.seasons[this.state.activeSeason].episodes;
+                    episodes_unsorted.sort(function(ea, eb){
+                        return ea.episodeNumber - eb.episodeNumber;
+                    });
+
+                    var episodeItems = episodes_unsorted.map(function(episode){
                         var style = {
                             backgroundImage: "url("+episode.screenshot+")",
                             backgroundSize: "cover"
