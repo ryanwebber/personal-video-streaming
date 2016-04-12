@@ -100,7 +100,6 @@
 
 		.media-modal{
 			background-color: rgba(0, 0, 0, 0.8);
-			padding: 30px;
 
 			.watch-button{
 				border-radius: 2px;
@@ -131,6 +130,7 @@
 		}
 
 		.movie-modal{
+			padding: 30px;
 
 			h2.movie-name{
 				color: @lessLight;
@@ -152,27 +152,114 @@
 		}
 
 		.show-modal{
+			
 
-			h2.show-name{
-				color: @lessLight;
-				margin-bottom: 5px;
+			.padded-content{
+				padding: 30px;
+
+				h2.show-name{
+					color: @lessLight;
+					margin-bottom: 5px;
+				}
+
+				h3.show-year{
+					color: @lessLight;
+					margin-top: 5px;
+					font-weight: 200;
+				}
+
+				.show-description{
+					color: @light;
+					font-weight: 100;
+					padding-left: 20px;
+				}
+
+				.no-seasons{
+					color: @accent;
+				}
 			}
 
-			h3.show-year{
-				color: @lessLight;
-				margin-top: 5px;
-				margin-bottom: 32px;
-				font-weight: 200;
-			}
+			.show-row{
+				@row-height: 120px;
 
-			.show-description{
-				color: @light;
-				font-weight: 100;
-				padding-left: 20px;
-			}
+				background-color: @moreDark;
+				border-top: 1px solid @theme;
+				border-bottom: 1px solid @theme;
+				min-height: @row-height;
 
-			.no-seasons{
-				color: @accent;
+				position: relative;
+
+				div.episode-item{
+					height: @row-height;
+
+					padding: 0 10px;
+
+					div{
+						height: 100%;
+					}
+
+					a{
+						cursor: pointer;
+
+						.inner-episode{
+							color: @light;
+							position: relative;
+
+							/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+49,1e5799+49,000000+100&0+0,0+50,0.8+100 */
+							background: -moz-linear-gradient(top,  rgba(30,87,153,0) 0%, rgba(30,87,153,0) 49%, rgba(29,85,150,0) 50%, rgba(0,0,0,0.8) 100%); /* FF3.6-15 */
+							background: -webkit-linear-gradient(top,  rgba(30,87,153,0) 0%,rgba(30,87,153,0) 49%,rgba(29,85,150,0) 50%,rgba(0,0,0,0.8) 100%); /* Chrome10-25,Safari5.1-6 */
+							background: linear-gradient(to bottom,  rgba(30,87,153,0) 0%,rgba(30,87,153,0) 49%,rgba(29,85,150,0) 50%,rgba(0,0,0,0.8) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#001e5799', endColorstr='#cc000000',GradientType=0 ); /* IE6-9 */
+
+
+
+							span.episode-text{
+								position: absolute;
+								bottom: 5px;
+								left: 20px;
+								font-weight: 100;
+							}
+
+							span.episode-text, i{
+								color: @light;
+								opacity: 0.6;
+							}
+						}
+
+						&:hover{
+							.inner-episode{
+								background: rgba(0,0,0,0.66);
+
+								i, span.episode-text{
+									color: @accent;
+									opacity: 0.7;
+								}
+							}
+						}
+					}
+				}
+
+				.carousel-button{
+					position: absolute;
+					height: @row-height;
+					background-color: @theme;
+					opacity: 0.9;
+					cursor: pointer;
+					top: 0;
+					padding: 0 10px;
+
+					&.left{
+						left: 0;
+					}
+
+					&.right{
+						right: 0;
+					}
+
+					&:hover{
+						background-color: @accent;
+					}
+				}
 			}
 		}
 
