@@ -1,5 +1,5 @@
-define(['react', 'jquery', 'app/controllers/home/ModalController'],
-    function (React, $, ModalController) {
+define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependencies/react-slick'],
+    function (React, $, ModalController, Carousel) {
 
         var ShowItem = React.createClass({
             getInitialState: function(){
@@ -41,12 +41,27 @@ define(['react', 'jquery', 'app/controllers/home/ModalController'],
                 }
 
                 if(show.seasons.length > 0){
+
+			var settings = {
+						dots: false,
+						infinite: false,
+						speed: 500,
+						slidesToShow: 5,
+						slidesToScroll: 1,
+						draggable: false
+				    };
+
 			var episodeElem = (
-				<div>
-					<span className="no-seasons">
-						Functionality Coming Soon
-					</span>
-				</div>
+				<Carousel {...settings}>
+							<div><h3>1</h3></div>
+							<div><h3>2</h3></div>
+							<div><h3>3</h3></div>
+							<div><h3>4</h3></div>
+							<div><h3>5</h3></div>
+							<div><h3>6</h3></div>
+							<div><h3>7</h3></div>
+							<div><h3>8</h3></div>
+						</Carousel>
 			);
                 }else{
 			var episodeElem = (
