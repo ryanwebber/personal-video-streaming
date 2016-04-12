@@ -54,56 +54,75 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                 }.bind(this));
             },
             submit: function(){
-                var uploader = new QueuedUploader(this.state.files, {
-                    url: this.props.url,
-                    fileData: function(file){
-                        var episode = this.state.data.episodes[file.name];
-                        return {
-                            season: this.state.data.season,
 
-                            show_cover: this.state.data.cover,
-                            show_description: this.state.data.description,
-                            show_name: this.state.data.name,
-                            show_poster: this.state.data.poster,
-                            show_trakt_id: this.state.data.trakt_id,
+                $.post("/show/prepare", {
+                    cover: this.state.data.cover,
+                    description: this.state.data.description,
+                    name: this.state.data.name,
+                    poster: this.state.data.poster,
+                    trakt_id: this.state.data.trakt_id,
+                }).done(function(show){
+                    $.post("/season/prepare", {
+                        seasonNumber: this.state.data.season,
+                        show: show.id
+                    }).done(function(season){
+                        var uploader = new QueuedUploader(this.state.files, {
+                            url: this.props.url,
+                            fileData: function(file){
+                                var episode = this.state.data.episodes[file.name];
+                                return {
+                                    season: this.state.data.season,
 
-                            episode_name: episode.name,
-                            episode_description: episode.description,
-                            episode_trakt_id: episode.trakt_id,
-                            episode_screenshot: episode.screenshot,
-                            episode_number: episode.episode
+                                    show_id: show.id,
+                                    show_cover: this.state.data.cover,
+                                    show_description: this.state.data.description,
+                                    show_name: this.state.data.name,
+                                    show_poster: this.state.data.poster,
+                                    show_trakt_id: this.state.data.trakt_id,
 
-                        };
-                    }.bind(this),
-                    onFileComplete: function(file){
-                        console.log("Completed:", file.name);
-                    },
-                    onFileComplete: function(file){
-                        console.log("Completed:", file.name);
-                    },
-                    onSuccess: function(){
-                        this.setState({
-                            upload: {
-                                progress: 100,
-                                complete: true
-                            }
+                                    episode_name: episode.name,
+                                    episode_description: episode.description,
+                                    episode_trakt_id: episode.trakt_id,
+                                    episode_screenshot: episode.screenshot,
+                                    episode_number: episode.episode
+
+                                };
+                            }.bind(this),
+                            onFileComplete: function(file){
+                                console.log("Completed:", file.name);
+                            },
+                            onFileComplete: function(file){
+                                console.log("Completed:", file.name);
+                            },
+                            onSuccess: function(){
+                                this.setState({
+                                    upload: {
+                                        progress: 100,
+                                        complete: true
+                                    }
+                                });
+                            }.bind(this),
+                            onProgress: function(prog){
+                                var updates = this.state.upload;
+                                updates = updates || {};
+
+                                updates[prog.file.name] = {
+                                    progress: prog.percent,
+                                    complete: false
+                                }
+                                this.setState({
+                                    upload: updates
+                                });
+                            }.bind(this)
                         });
-                    }.bind(this),
-                    onProgress: function(prog){
-                        var updates = this.state.upload;
-                        updates = updates || {};
 
-                        updates[prog.file.name] = {
-                            progress: prog.percent,
-                            complete: false
-                        }
-                        this.setState({
-                            upload: updates
-                        });
-                    }.bind(this)
-                });
-
-                uploader.submit();
+                        uploader.submit();
+                    }.bind(this)).fail(function(){
+                        //nothing yet for fail
+                    }.bind(this));
+                }.bind(this)).fail(function(){
+                    // error :(
+                }.bind(this));
             },
             componentDidMount: function() {
                 // TODO stuff

@@ -118,14 +118,10 @@ module.exports = {
 
     uploadShow: function (req, res) {
 
-        var name = req.body['show_name'];
-        var trakt_id = req.body['show_trakt_id'];
-        var poster = req.body['show_poster'];
-        var cover = req.body['show_cover'];
-        var description = req.body['show_description'];
         var seasonNumber = req.body['season'];
+        var show_id = req.body['show_id'];
 
-        if(!name || !seasonNumber){
+        if(!show_id || !seasonNumber){
             return res.send(400);
         }
 
@@ -139,18 +135,17 @@ module.exports = {
             return res.send(400);
         }
 
-        Show.findOrCreate({
-            name: name,
-            trakt_id,
-            poster: poster,
-            cover: cover,
-            description: description,
+        Show.findOne({
+            id: show_id,
         }).exec(function(err, show){
+
+            var name = show.name;
+
             if(!err && show){
                 console.log(show);
 
-                Season.findOrCreate({
-                    show: show,
+                Season.findOne({
+                    show: show.id,
                     seasonNumber: seasonNumber
                 }).exec(function(err, season){
                     if(!err && season){

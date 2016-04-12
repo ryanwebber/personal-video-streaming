@@ -7,9 +7,6 @@
 
  module.exports = {
 	attributes: {
-		trakt_id: {
-			type: 'integer',
-		},
 		seasonNumber: {
 			type: 'integer',
 			required: true
