@@ -1,0 +1,109 @@
+@height:40px;
+@sub-height: 30px;
+@spacing:10px;
+@select-colour:@moreDark;
+@font-size:18px;
+@border-colour:@theme;
+
+div.dropdown-container {
+    &.show>div.dropdown-list {
+        .transform(scale(1, 1));
+    }
+
+    width: 200px;
+    min-height: @height;
+
+    @icon-width:14px;
+
+    >div.dropdown-display {
+        float:left;
+        width:100%;
+        background:white;
+        height:@height;
+        cursor:pointer;
+        background-color: @moreDark;
+
+        border: 1px solid @border-colour;
+
+        .border-box;
+
+        >* {
+            float:left;
+            height:100%;
+            //.vertical-center(@height);
+        }
+
+        >span {
+            font-size:@font-size;
+            width:100%;
+            position:relative;
+            .border-box;
+            padding-right:@icon-width+@spacing*2;
+            padding-left:@spacing;
+            line-height: @height;
+        }
+
+        >i {
+            position:relative;
+            width:@icon-width;
+            margin-left:(@spacing+@icon-width)*-1;
+            font-size:1.125em;
+            font-weight:bold;
+            padding-right:@spacing;
+            text-align:right;
+            line-height: @height;
+        }
+    }
+
+    >div.dropdown-list {
+        float:left;
+        width:100%;
+        position:relative;
+        width:100%;
+        z-index:2000;
+        .transform(scale(1, 0));
+        .transition(-webkit-transform ease 250ms);
+        .transition(transform ease 250ms);
+
+        >div {
+            position:absolute;
+            width:100%;
+            z-index:2000;
+            cursor:pointer;
+
+            >div {
+                float:left;
+                width:100%;
+                padding:0 @spacing;
+                font-size:@font-size * 0.75;
+                .border-box;
+                border:solid 1px @border-colour;
+                border-top:none;
+                height: @sub-height;
+                background-color: @lessDark;
+
+                @icon-width:20px;
+
+                &:hover {
+                    background:@moreDark;
+                }
+
+                &.selected {
+                    background:@select-colour;
+                    color:white;
+                }
+
+                >* {
+                    //.vertical-centre(@height);
+                }
+
+                >span {
+                	line-height: @sub-height;
+                    float:left;
+                    width:100%;
+                    font-weight: 100;
+                }
+            }
+        }
+    }
+}

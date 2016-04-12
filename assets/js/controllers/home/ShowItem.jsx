@@ -1,5 +1,5 @@
-define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependencies/react-slick'], 
-    function (React, $, ModalController, Carousel) {
+define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependencies/react-slick', 'app/controllers/Dropdown'], 
+    function (React, $, ModalController, Carousel, Dropdown) {
 
         var LeftCarouselButton = React.createClass({
             render: function() {
@@ -65,6 +65,15 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                 var base = "/watch/";
                 return base + episode.video;
             },
+            selectSeason: function(season){
+                var index = this.state.seasons.findIndex(function(s){
+                    return season.seasonNumber == s.seasonNumber;
+                }, this);
+                if(index >=0 && index < this.state.seasons.length){
+                    this.setState({activeSeason: index});
+                }
+
+            },
             render: function(){
                 var show = this.props.show;
 
@@ -80,7 +89,9 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
 
                 if(this.state.loadingSeasons){
                     var episodeElem = (
-                        <div className="spinner center--all"></div>
+                        <div className="show-row center">
+                            <div className="spinner center--all"></div>
+                        </div>
                     );
                 }else if(show.seasons.length > 0){
 
@@ -112,7 +123,7 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                                     <div style={style}>
                                         <div className="inner-episode">
                                             <i className="fa fa-2x fa-play-circle center--all"></i>
-                                            <span className="episode-text">Episode {episode.episodeNumber}</span>
+                                            <span className="episode-text">{episode.sXeX}</span>
                                         </div>
                                     </div>
                                 </a>
@@ -120,16 +131,33 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                         );
                     }.bind(this));
 
+                    var seasonList = show.seasons.map(function(season, i){
+                        return {
+                            name: "Season " + season.seasonNumber,
+                            seasonNumber: season.seasonNumber,
+                            id: season.id + "-" + i
+                        }
+                    });
+
                 	var episodeElem = (
-                		<Carousel {...settings}>
-							{episodeItems}
-						</Carousel>
+                        <div>
+                            <div className="season-picker">
+                                <Dropdown onSelect={this.selectSeason} list={seasonList} selected={seasonList[this.state.activeSeason]} />
+                            </div>
+                            <div className="show-row center">
+                        		<Carousel {...settings}>
+        							{episodeItems}
+        						</Carousel>
+                            </div>
+                        </div>
                 	);
                 }else{
                 	var episodeElem = (
-                		<span className="no-seasons center--all">
-                			No Seasons Available Yet :(	
-                		</span>
+                        <div className="show-row center">
+                            <span className="no-seasons center--all">
+                                No Seasons Available Yet :( 
+                            </span>
+                        </div>
                 	);
                 }
 
@@ -150,9 +178,7 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                                         {show.description}
                                     </p>
                                 </div>
-                                <div className="show-row center">
-                                    {episodeElem}
-                                </div>
+                                {episodeElem}
                             </div>
                         </ModalController>
                     </div>
