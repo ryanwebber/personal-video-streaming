@@ -130,6 +130,7 @@ module.exports = {
         var episode_screenshot = req.body['episode_screenshot'];
         var episode_description = req.body['episode_description'];
         var episode_number = req.body['episode_number'];
+        var episode_number_alt = req.body['episode_number_alt'];
 
         if(!episode_name || !episode_number){
             return res.send(400);
@@ -154,6 +155,7 @@ module.exports = {
                             screenshot: episode_screenshot,
                             description: episode_description,
                             episodeNumber: episode_number,
+                            episodeNumberAlt: episode_number_alt,
                             seasonNumber: seasonNumber,
                             season: season,
                             show: show

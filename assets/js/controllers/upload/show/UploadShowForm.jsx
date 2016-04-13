@@ -94,7 +94,8 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                                     episode_description: episode.description,
                                     episode_trakt_id: episode.trakt_id,
                                     episode_screenshot: episode.screenshot,
-                                    episode_number: episode.episode
+                                    episode_number: episode.episode,
+                                    episode_number_alt: episode.episodeAlt
 
                                 };
                             }.bind(this),
@@ -211,6 +212,10 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                                 <p>
                                     <label>Episode Number:</label>
                                     <input type="text" valueLink={this.makeValueLinkForFilename('episode', filename)} placeholder="Episode Number" />
+                                </p>
+                                <p>
+                                    <label>Episode Number (Part 2):</label>
+                                    <input type="text" valueLink={this.makeValueLinkForFilename('episodeAlt', filename)} placeholder="Episode Number (Part 2)" />
                                 </p>
                                 <p>
                                     <label>Episode Trakt ID:</label>
