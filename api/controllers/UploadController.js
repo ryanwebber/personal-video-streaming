@@ -255,9 +255,19 @@ module.exports = {
                         var results = {};
                         for(var given in parsed){
                             var preFilled = parsed[given];
-                            var filled = reduced.find(function(elem){
-                                return elem.episode === preFilled.episode;
-                            });
+
+                            var filled = null;
+                            for(var i in reduced){
+                                var r = reduced[i];
+                                if(r.episode === preFilled.episode){
+                                    filled = r;
+                                    break;
+                                }
+                            }
+
+                            // var filled = reduced.find(function(elem){
+                            //     return elem.episode === preFilled.episode;
+                            // });
                             if(filled){
                                 results[preFilled.filename] = filled;
                             }
