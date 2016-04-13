@@ -103,14 +103,15 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                             },
                             onFileComplete: function(file){
                                 console.log("Completed:", file.name);
-                            },
+                                var updates = this.state.upload;
+                                updates[file.name] = {
+                                    progress: 100,
+                                    complete: true
+                                };
+                                this.setState({upload: updates});
+                            }.bind(this),
                             onSuccess: function(){
-                                this.setState({
-                                    upload: {
-                                        progress: 100,
-                                        complete: true
-                                    }
-                                });
+                                // Nothing
                             }.bind(this),
                             onProgress: function(prog){
                                 var updates = this.state.upload;
@@ -126,6 +127,14 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                             }.bind(this)
                         });
 
+                        var updates = {};
+                        this.state.files.forEach(function(file){
+                            updates[file.name] = {
+                                progress: 0,
+                                complete: false
+                            };
+                        });
+                        this.setState({upload: updates});
                         uploader.submit();
                     }.bind(this)).fail(function(){
                         //nothing yet for fail
@@ -148,24 +157,43 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                         <div className="spinner center--all"></div>
                     );
                 }else if(this.state.upload){
-                    return (null);
-                    var style = {
-                        width: this.state.upload.progress + "100%"
-                    };
-                    var size = {
-                        width: "400px",
-                        maxWidth: "90%"
-                    };
-                    if(this.state.upload.complete){
-                        var text = "Done";
-                        var cl = "progress center--all";
-                    }else{
-                        var text = style.width;
-                        var cl = "progress progress--striped center--all progress--animate";
+
+                    var bars = [];
+                    for(var filename in this.state.upload){
+
+                        var prog = this.state.upload[filename];
+
+                        var style = {
+                            width: prog.progress + "%"
+                        };
+
+                        var size = {
+                            width: "400px",
+                            maxWidth: "90%"
+                        };
+                        if(prog.complete){
+                            var text = "Done";
+                            var cl = "progress center--all";
+                        }else{
+                            var text = style.width;
+                            var cl = "progress progress--striped center--all progress--animate";
+                        }
+
+                        bars.push(
+                            <div style={{marginTop: 20, textAlign: 'center'}} key={filename}>
+                                <p><small>{filename}</small></p>
+                                <div className={cl} style={size}>
+                                    <span style={style}>{text}</span>
+                                </div>
+                            </div>
+                        );
                     }
+
                     return(
-                        <div className={cl} style={size}>
-                            <span style={style}>{text}</span>
+                        <div className="upload-form">
+                            <div className="page-block">
+                                {bars}
+                            </div>
                         </div>
                     );
                 }else if(this.state.files.length){
