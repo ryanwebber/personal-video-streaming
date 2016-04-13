@@ -22,6 +22,16 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                     }.bind(this)
                 }
             },
+            makeValueLinkForFilename: function(key, filename){
+                return {
+                    value: this.state.data.episodes[filename][key],
+                    requestChange: function(newValue) {
+                        newState = this.state.data;
+                        newState.episodes[filename][key] = newValue;
+                        this.setState({data: newState});
+                    }.bind(this)
+                }
+            },
             setLoading: function(val){
                 var state = this.state;
                 state.loading = val;
@@ -159,10 +169,41 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                         </div>
                     );
                 }else if(this.state.files.length){
+
+                    var episodeForms = [];
+                    for(var filename in this.state.data.episodes){
+                        var episodeData = this.state.data.episodes[filename];
+                        episodeForms.push(
+                            <fieldset>
+                                <legend>{filename}</legend>
+                                <p>
+                                    <label>Episode Title:</label>
+                                    <input type="text" valueLink={this.makeValueLinkForFilename('name', filename)} placeholder="Episode Title" />
+                                </p>
+                                <p>
+                                    <label>Episode Number:</label>
+                                    <input type="text" valueLink={this.makeValueLinkForFilename('episode', filename)} placeholder="Episode Number" />
+                                </p>
+                                <p>
+                                    <label>Episode Trakt ID:</label>
+                                    <input type="text" valueLink={this.makeValueLinkForFilename('trakt_id', filename)} placeholder="Episode Trakt ID" />
+                                </p>
+                                <p>
+                                    <label>Episode Screenshot:</label>
+                                    <input type="text" valueLink={this.makeValueLinkForFilename('screenshot', filename)} placeholder="Episode Screenshot" />
+                                </p>
+                                <p>
+                                    <label>Episode Description:</label>
+                                    <textarea type="text" valueLink={this.makeValueLinkForFilename('description', filename)} placeholder="Episode Description" rows="4"/>
+                                </p>
+                            </fieldset>
+                        );
+                    }
+
                     return(
                         <div className="upload-form">
                             <div className="page-block">
-                                <h1>Show Meta Data</h1>
+                                <h1>Season Meta Data</h1>
                                 <form>
                                     <p>
                                         <label>Show Title:</label>
@@ -188,6 +229,8 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                                         <label>Description:</label>
                                         <textarea type="text" valueLink={this.makeValueLink('description')} placeholder="Description" rows="7"/>
                                     </p>
+                                    <h1>Episode Meta Data</h1>
+                                    {episodeForms}
                                 </form>
                                 <button onClick={this.submit}>Upload</button>
                             </div>
