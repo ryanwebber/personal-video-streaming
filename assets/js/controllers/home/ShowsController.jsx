@@ -18,31 +18,28 @@ define(['react', 'jquery', 'app/controllers/home/ShowItem'],
                 return "#";
             },
             update: function(event){
+                console.log(event);
                 if(event.verb == "created"){
                     var newShow = event.data;
                     newShow.id = event.id;
-                    var show = this.state.shows;
+                    var shows = this.state.shows;
                     shows.push(newShow);
                     this.setState({shows: shows});
                 }
             },
             componentDidMount: function() {
                 // TODO stuff
-                $.get("/show").done(function(shows){
-                    this.setState({shows: shows});
-                    var data = {
-                        ids: shows.map(function(show){
-                            return show.id
-                        })
-                    };
-                    io.socket.get("/show/updates", data, function(){
-                        io.socket.on('show', this.update);
-                    }.bind(this));
-                }.bind(this)).fail(function(err){
-                    this.setState({error: "Couldn't Load Shows"});
-                }.bind(this)).always(function(){
+
+                io.socket.on('show', this.update);
+                io.socket.get("/show", function(data, jwr){
+                    if (jwr.statusCode == 200){
+                        this.setState({shows: data});
+                    }else {
+                        this.setState({error: "Couldn't Load Shows"});
+                    }
                     this.setState({loading: false});
                 }.bind(this));
+
             },
             componentWillUnmount: function(){
                 // TODO stuff

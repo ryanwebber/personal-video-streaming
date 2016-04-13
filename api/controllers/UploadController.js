@@ -142,7 +142,6 @@ module.exports = {
             var name = show.name;
 
             if(!err && show){
-                console.log(show);
 
                 Season.findOne({
                     show: show.id,
@@ -160,6 +159,11 @@ module.exports = {
                             show: show
                         }).exec(function(err, episode){
                             if(!err && episode){
+                                Episode.publishCreate(episode);
+                                Season.publishUpdate(season.id, {
+                                    episodes: season.episodes.concat([episode])
+                                });
+                                var progress = null;
                                 req.file('file').upload({
                                     maxBytes: 0
                                 }, function (err, uploadedFiles) {
@@ -183,6 +187,9 @@ module.exports = {
                                                             Episode.publishUpdate(episode.id, {
                                                                 video: video
                                                             });
+                                                            Season.publishUpdate(season.id, {
+                                                                episodes: season.episodes.concat([episode])
+                                                            });
                                                             res.send(200, episode);
                                                         }else{
                                                             res.send(500);
@@ -199,7 +206,16 @@ module.exports = {
                                         res.send(503, err);
                                     }
                                 }).on('progress', function(state){
-
+                                    var byteCount = state.stream.byteCount;
+                                    var written = state.written;
+                                    var newProgress = Math.floor(100 * (written / byteCount));
+                                    if(newProgress != progress){
+                                        progress = newProgress;
+                                        sails.sockets.blast('upload.progress', {
+                                            progress: progress,
+                                            id: episode.id
+                                        });
+                                    }
                                 });
                             }else{
                                 sails.log.error(err);
@@ -265,9 +281,6 @@ module.exports = {
                                 }
                             }
 
-                            // var filled = reduced.find(function(elem){
-                            //     return elem.episode === preFilled.episode;
-                            // });
                             if(filled){
                                 results[preFilled.filename] = filled;
                             }

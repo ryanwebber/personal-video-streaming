@@ -14,12 +14,24 @@ module.exports = {
 			return res.send(400);
 		}
 
-		Season.findOrCreate({
+		Season.findOne({
 			show: show,
 			seasonNumber: seasonNumber
 		}).exec(function(err, season){
 			if(!err && season){
 				res.json(season);
+			}else if(!err){
+				Season.create({
+					show: show,
+					seasonNumber: seasonNumber
+				}).exec(function(err, season){
+					if(!err && season){
+						Season.publishCreate(season);
+						res.json(season);
+					}else{
+						res.send(500);
+					}
+				});
 			}else{
 				res.send(500);
 			}
