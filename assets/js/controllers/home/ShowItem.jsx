@@ -21,6 +21,20 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
             }
         });
 
+        var fmt2 = function(num){
+            if(num >= 10) return "e" + num;
+            else return "e0" + num;
+        }
+
+        var sXeX = function(season, episode){
+            var x = fmt2(episode.episodeNumber);
+
+            if(episode.episodeNumberAlt){
+                x = x + " & " + fmt2(episode.episodeNumberAlt);
+            }
+            return x;
+        }
+
         var ShowItem = React.createClass({
             getInitialState: function(){
                 return {
@@ -74,6 +88,8 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                                 var index = eps.findIndex(function(e2){
                                     return e2.id == episode.id;
                                 });
+
+                                episode.sXeX = sXeX(season, episode);
 
                                 if(index != -1){
                                     eps[index] = episode;
