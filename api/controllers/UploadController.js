@@ -6,7 +6,7 @@ var ptn = require('parse-torrent-name');
 var trakt = require('trakt-api')(sails.config.trakt_api_key, {extended: "full,images"});
 
 if(![].find){
-    require('array.prototype.find');
+    Array.prototype.find = require('array.prototype.find');
 }
 
 var base_path = '/data/media';
