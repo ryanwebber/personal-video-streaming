@@ -25,7 +25,7 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
             getInitialState: function(){
                 return {
                     modalOpen: false,
-                    progress: null,
+                    progress: {},
                     activeSeason: 0,
                     loadingSeasons: true,
                     seasons: []
@@ -33,13 +33,15 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
             },
             componentDidMount: function() {
                 io.socket.on('upload.progress', this.updateProgress);
-                $.get("/season", {
+                io.socket.on('season', this.updateSeasons);
+                io.socket.get("/season", {
                     show: this.props.show.id
-                }).done(function(seasons){
-                    this.setState({
-                        seasons: seasons
-                    });
-                }.bind(this)).always(function(){
+                }, function(seasons, jwr){
+                    if (jwr.statusCode == 200){
+                        this.setState({
+                            seasons: seasons
+                        });
+                    }
                     this.setState({
                         loadingSeasons: false
                     });
@@ -57,8 +59,39 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
             updateProgress: function(obj){
                 var id = obj.id;
                 var progress = obj.progress;
-                if(id == this.props.show.id){
-                    this.setState({progress: progress});
+                var progresses = this.state.progress;
+                progresses[id] = progress;
+                this.setState({progress: progresses});
+            },
+            updateSeasons: function(event){
+                if(event.verb == "updated"){
+                    var seasonid = event.id;
+                    var seasons = this.state.seasons;
+                    seasons.forEach(function(season){
+                        if(season.id === seasonid){
+                            var eps = season.episodes;
+                            event.data.episodes.forEach(function(episode){
+                                var index = eps.findIndex(function(e2){
+                                    return e2.id == episode.id;
+                                });
+
+                                if(index != -1){
+                                    eps[index] = episode;
+                                }else{
+                                    eps.push(episode);
+                                }
+                            });
+                            season.episodes = eps;
+                        }
+                    });
+                    console.log(seasons);
+                    this.setState({seasons: seasons});
+                }else if(event.verb == "created"){
+                    var newSeason = event.data;
+                    newSeason.id = event.id;
+                    var seasons = this.state.seasons;
+                    seasons.push(newSeason);
+                    this.setState({seasons: seasons});
                 }
             },
             linkForEpisode: function(episode){
@@ -82,8 +115,8 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                     backgroundSize: "cover"
                 };
 
-                var str = show.seasons.length + " Season";
-                if(show.seasons.length != 1){
+                var str = this.state.seasons.length + " Season";
+                if(this.state.seasons.length != 1){
                 	str += "s";
                 }
 
@@ -93,7 +126,7 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                             <div className="spinner center--all"></div>
                         </div>
                     );
-                }else if(show.seasons.length > 0){
+                }else if(this.state.seasons.length > 0){
 
                 	var settings = {
 						dots: false,
@@ -112,26 +145,58 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                     });
 
                     var episodeItems = episodes_unsorted.map(function(episode){
+
                         var style = {
                             backgroundImage: "url("+episode.screenshot+")",
                             backgroundSize: "cover"
                         };
 
-                        return (
-                            <div className="episode-item" key={episode.id}>
-                                <a href={this.linkForEpisode(episode)}>
+                        if(episode.video){
+
+                            return (
+                                <div className="episode-item" key={episode.id}>
+                                    <a href={this.linkForEpisode(episode)}>
+                                        <div style={style}>
+                                            <div className="inner-episode">
+                                                <i className="fa fa-2x fa-play-circle center--all"></i>
+                                                <span className="episode-text">{episode.sXeX}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            );
+                        }else{
+
+                            if(this.state.progress[episode.id]){
+                                var loader = (
+                                    <div className="center--all">
+                                        <div className="spinner"></div>
+                                        <br/>
+                                        <span>{this.state.progress[episode.id]}%</span>
+                                    </div>
+                                );
+                            }else{
+                                var loader = (
+                                    <div className="center--all">
+                                        <div className="spinner"></div>
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <div className="episode-item" key={episode.id}>
                                     <div style={style}>
                                         <div className="inner-episode">
-                                            <i className="fa fa-2x fa-play-circle center--all"></i>
+                                            {loader}
                                             <span className="episode-text">{episode.sXeX}</span>
                                         </div>
                                     </div>
-                                </a>
-                            </div>
-                        );
+                                </div>
+                            );
+                        }
                     }.bind(this));
 
-                    var seasonList = show.seasons.map(function(season, i){
+                    var seasonList = this.state.seasons.map(function(season, i){
                         return {
                             name: "Season " + season.seasonNumber,
                             seasonNumber: season.seasonNumber,

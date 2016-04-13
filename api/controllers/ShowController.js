@@ -9,9 +9,6 @@ module.exports = {
 	updates: function(req, res){
 		if(req.isSocket){
 			Show.watch(req);
-			Season.watch(req);
-			Episode.watch(req);
-			Episode.subscribe(req, req.param("ids"));
 		}
 		res.send(200);
 	},
@@ -26,7 +23,7 @@ module.exports = {
 			return res.send(400);
 		}
 
-		Show.findOrCreate({
+		Show.findOne({
 			name: name,
 			trakt_id: trakt_id
 		}, {
@@ -38,6 +35,21 @@ module.exports = {
 		}).exec(function(err, show){
 			if(!err && show){
 				res.json(show);
+			}else if(!err){
+				Show.create({
+					name: name,
+					trakt_id: trakt_id,
+					description: description,
+					cover: cover,
+					poster: poster
+				}).exec(function(err, show){
+					if(!err && show){
+						res.json(show);
+						Show.publishCreate(show);
+					}else{
+						res.send(500);
+					}
+				});
 			}else{
 				res.send(500);
 			}

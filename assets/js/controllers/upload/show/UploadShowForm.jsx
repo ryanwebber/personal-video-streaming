@@ -174,7 +174,7 @@ define(['react', 'jquery', 'app/controllers/upload/QueuedUploader'],
                     for(var filename in this.state.data.episodes){
                         var episodeData = this.state.data.episodes[filename];
                         episodeForms.push(
-                            <fieldset>
+                            <fieldset key={filename}>
                                 <legend>{filename}</legend>
                                 <p>
                                     <label>Episode Title:</label>
