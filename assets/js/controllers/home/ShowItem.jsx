@@ -181,34 +181,39 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                                     </a>
                                 </div>
                             );
+
                         }else{
 
                             if(this.state.progress[episode.id]){
                                 var loader = (
-                                    <div className="center--all">
-                                        <div className="spinner"></div>
-                                        <br/>
-                                        <span>{this.state.progress[episode.id]}%</span>
+                                    <div className="episode-item" key={episode.id}>
+                                        <div style={style}>
+                                            <div className="inner-episode partial">
+                                                <div className="center--all">
+                                                    <div className="spinner"></div>
+                                                    <p>{this.state.progress[episode.id]}%</p>
+                                                </div>
+                                                <span className="episode-text">{episode.sXeX}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 );
                             }else{
                                 var loader = (
-                                    <div className="center--all">
-                                        <div className="spinner"></div>
+                                    <div className="episode-item" key={episode.id}>
+                                        <div style={style}>
+                                            <div className="inner-episode partial">
+                                                <div className="center--all">
+                                                    <div className="spinner"></div>
+                                                </div>
+                                                <span className="episode-text">{episode.sXeX}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 );
                             }
 
-                            return (
-                                <div className="episode-item" key={episode.id}>
-                                    <div style={style}>
-                                        <div className="inner-episode">
-                                            {loader}
-                                            <span className="episode-text">{episode.sXeX}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
+                            return loader;
                         }
                     }.bind(this));
 
@@ -254,7 +259,7 @@ define(['react', 'jquery', 'app/controllers/home/ModalController', 'app/dependen
                                     <h2 className="show-name">{show.name}</h2>
                                     <h3 className="show-year">{str}</h3>
                                     <hr/><br/>
-                                    <span>Description:</span>
+                                    <span>Overview:</span>
                                     <p className="show-description text--justify">
                                         {show.description}
                                     </p>

@@ -51,7 +51,7 @@ define(['react', 'jquery', 'app/controllers/home/ModalController'],
                                     <h2 className="movie-name">{movie.name}</h2>
                                     <h3 className="movie-year">({movie.year})</h3>
                                     <hr/><br/>
-                                    <span>Description:</span>
+                                    <span>Overview:</span>
                                     <p className="movie-description text--justify">
                                         {movie.description}
                                     </p>
