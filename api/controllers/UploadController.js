@@ -149,7 +149,11 @@ module.exports = {
                     seasonNumber: seasonNumber
                 }).exec(function(err, season){
                     if(!err && season){
-                        Episode.create({
+                        Episode.findOrCreate({
+                            episodeNumber: episode_number,
+                            season: season,
+                            show: show
+                        },{
                             name: episode_name,
                             trakt_id: episode_trakt_id,
                             screenshot: episode_screenshot,
@@ -161,7 +165,6 @@ module.exports = {
                             show: show
                         }).exec(function(err, episode){
                             if(!err && episode){
-                                Episode.publishCreate(episode);
                                 Season.publishUpdate(season.id, {
                                     episodes: season.episodes.concat([episode])
                                 });
