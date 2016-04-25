@@ -6,6 +6,15 @@
  */
 
 module.exports = {
-	
+	watch: function(req, res){
+		var video = req.params["video_id"];
+		if(!video){
+			return res.send(400);
+		}
+
+		res.view("watch", {
+			video: video
+		});
+	}
 };
 

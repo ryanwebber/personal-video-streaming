@@ -1,3 +1,8 @@
-<div id="video-page" data-video="<%= video %>"></div>
+<div id="video-page">
+	<div class="video-container center--all">
+		<div id="video-controls"></div>
+		<video src="/stream/<%= video %>" controls="controls" id="video-player" autoplay="autoplay"></video>
+	</div>
+</div>
 
 <script src="/js/controllers/watch/main.js"></script>
