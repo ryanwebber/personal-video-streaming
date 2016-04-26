@@ -6,18 +6,95 @@
 	.video-container{
 		width: 95%;
 		height: 95%;
+		background-color: black;
 
 		video{
 			width: 100%;
 			height: 100%;
 		}
 
-		#video-controls{
+		.video-loader{
 			height: 100%;
 			width: 100%;
 			position: absolute;
 			top: 0;
 			left: 0;
+		}
+
+		&.fullscreen{
+			width: 100%;
+			height: 100%;
+		}
+
+		.video-controls{
+			@controlHeight: 36px;
+
+			height: @controlHeight;
+			background-color: rgba(255, 255, 255, 0.7);
+			position: absolute;
+			bottom: 20px;
+
+			width: 90%;
+			max-width: 720px;
+
+			margin: 0 auto;
+			left: 0;
+			right: 0;
+
+			.video-progress{
+				@progressHeight: 3px;
+
+				height: @progressHeight;
+				position: absolute;
+				width: 100%;
+				margin-top: -@progressHeight;
+				left: 0;
+				background-color: rgba(0, 0, 0, 0.75);
+
+				.video-buffer, .video-playback{
+					height: 100%;
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 0;
+				}
+
+				.video-buffer{
+					background-color: @lessLight;
+				}
+
+				.video-playback{
+					background-color: @accent;
+				}
+			}
+
+			.video-control{
+				height: 100%;
+				text-align: center;
+
+				i, span{
+					height: 100%;
+					line-height: @controlHeight;
+					color: @moreDark;
+				}
+
+				>span{
+					padding: 0 15px;
+					font-size: 10px;
+				}
+
+				&.video-control-button{
+					width: @controlHeight * 1.5;
+					cursor: pointer;
+
+					&:hover{
+						background-color: rgba(0,0,0,0.1);
+						i{
+
+						}
+					}
+				}
+			}
 		}
 	}
 }

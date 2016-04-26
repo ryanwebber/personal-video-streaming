@@ -12,9 +12,10 @@ require(['jquery', 'react', 'react-dom',
     function ($, React, ReactDOM, VideoController) {
         $(document).ready(function(){
 
+		var video_id = window.location.href.split("/").pop();
             ReactDOM.render(
-                <VideoController video={document.getElementById("video-player")} />,
-                document.getElementById('video-controls')
+                <VideoController videoId={video_id} />,
+                document.getElementById('video-page')
             );
 
         });
