@@ -1,6 +1,21 @@
 define(['react', 'jquery'], 
     function (React, $) {
 
+        debounce = function(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
         var VideoPlayer = React.createClass({
             getInitialState: function(){
                 return {};
@@ -49,13 +64,29 @@ define(['react', 'jquery'],
                 }else if(nextProps.playing === false){
                     video.pause();
                 }
+
+                video.volume = nextProps.volume;
             },
             seek: function(seconds){
                 this.refs.videoElement.currentTime = seconds;
             },
+            togglePlaying: function(){
+                var video = this.refs.videoElement;
+                if(this.props.playing === false){
+                    video.play();
+                    if(this.props.didPlay){
+                        this.props.didPlay();
+                    }
+                }else if(this.props.playing === true){
+                    video.pause();
+                    if(this.props.didPause){
+                        this.props.didPause();
+                    }
+                }
+            },
             render: function(){
                 return (
-                    <video src={this.props.source} ref="videoElement"/>
+                    <video src={this.props.source} ref="videoElement" onClick={this.togglePlaying} />
                 );
             }
         });
@@ -64,6 +95,8 @@ define(['react', 'jquery'],
             getInitialState: function(){
                 return {
                     position: 0,
+                    volume: 0.75,
+                    muted: false,
 
                     bufferedStart: 0,
                     bufferedEnd: 0,
@@ -71,6 +104,8 @@ define(['react', 'jquery'],
                     playing: false,
                     duration: null,
                     requestedFullScreen: false,
+                    controlsHidden: false,
+                    showingVolume: false,
 
                     loaded: false
                 };
@@ -100,6 +135,18 @@ define(['react', 'jquery'],
                 this.setState({
                     playing: !this.state.playing
                 });
+            },
+            toggleMute: function(){
+                if(this.state.volume == 0){
+                    this.setState({
+                        muted: !this.state.muted,
+                        volume: 0.75
+                    });
+                }else{
+                    this.setState({
+                        muted: !this.state.muted
+                    });
+                }
             },
             toggleFullscreen: function(){
                 var video = this.refs.videoContainer;
@@ -145,6 +192,47 @@ define(['react', 'jquery'],
                 var s = ((pos + 0.0) / this.refs.videoProgress.offsetWidth) * this.state.duration;
                 this.refs.video.seek(s);
             },
+            didPause: function(){
+                this.setState({
+                    playing: false
+                });
+            },
+            didPlay: function(){
+                this.setState({
+                    playing: true
+                });
+            },
+            mouseMove: function(){
+                if(this.state.controlsHidden){
+                    this.setState({
+                        controlsHidden: false,
+                    });
+                }
+                this.hideOrShowControls.call();
+            },
+            hideOrShowControls: debounce(function(){
+                if(this.state.playing){
+                    this.setState({
+                        controlsHidden: true,
+                    });
+                }
+            }, 2000),
+            openVolume: function(){
+                this.setState({
+                    showingVolume: true
+                });
+            },
+            closeVolume: function(){
+                this.setState({
+                    showingVolume: false
+                });
+            },
+            setVolume: function(event){
+                this.setState({
+                    volume: Number(event.target.value),
+                    muted: false,
+                });
+            },
             componentDidMount: function() {
 
             },
@@ -176,7 +264,7 @@ define(['react', 'jquery'],
                 }
 
                 return(
-                    <div className={"video-container center--all" + (this.isFullScreen() ? " fullscreen" : "")} ref="videoContainer">
+                    <div className={"video-container center--all" + (this.isFullScreen() ? " fullscreen" : "") + (this.state.controlsHidden ? " hidden-controls" : "")} ref="videoContainer" onMouseMove={this.mouseMove}>
                         <div className="video-loader">
                             {videoLoader}
                         </div>
@@ -186,6 +274,9 @@ define(['react', 'jquery'],
                             timeupdate={this.timeUpdated}
                             bufferupdate={this.bufferUpdated}
                             playing={this.state.playing || !this.state.loaded}
+                            didPause={this.didPause}
+                            didPlay={this.didPlay}
+                            volume={this.state.muted ? 0 : this.state.volume}
                         />
                         <div className="video-controls">
                             <div className="video-progress" onClick={this.playbackClicked} ref="videoProgress">
@@ -197,9 +288,16 @@ define(['react', 'jquery'],
                                     <i className={this.state.playing ? "fa fa-pause" : "fa fa-play"}></i>
                                 </div>
                             </a>
-                            <div className="video-control video-control-button float--left">
-                                <i className="fa fa-volume-up"></i>
-                            </div>
+                            <a onMouseOut={this.closeVolume}>
+                                <div className="video-control video-control-button float--left" onMouseOver={this.openVolume}>
+                                    <div onClick={this.toggleMute} style={{display: "block", height: "100%", width: "100%"}}>
+                                        <i className={"fa" + (this.state.volume == 0 || this.state.muted? " fa-volume-off" : (this.state.volume > 0.5 ? " fa-volume-up" : " fa-volume-down"))}></i>
+                                    </div>
+                                    <div className={"video-control-slider" + (!this.state.showingVolume ? " slider-hidden" : "")}>
+                                        <input type="range" orient="vertical" className="input-slider" min="0" max="1" step="0.01" value={this.state.muted ? 0 : this.state.volume} onChange={this.setVolume}/>
+                                    </div>
+                                </div>
+                            </a>
                             <div className="video-control float--left">
                                 {durationElem}
                             </div>
