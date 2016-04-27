@@ -50,6 +50,9 @@ define(['react', 'jquery'],
                     video.pause();
                 }
             },
+            seek: function(seconds){
+                this.refs.videoElement.currentTime = seconds;
+            },
             render: function(){
                 return (
                     <video src={this.props.source} ref="videoElement"/>
@@ -137,6 +140,11 @@ define(['react', 'jquery'],
                 var s = Math.floor(d % 3600 % 60);
                 return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s); 
             },
+            playbackClicked: function(event){
+                var pos = event.nativeEvent.offsetX;
+                var s = ((pos + 0.0) / this.refs.videoProgress.offsetWidth) * this.state.duration;
+                this.refs.video.seek(s);
+            },
             componentDidMount: function() {
 
             },
@@ -172,7 +180,7 @@ define(['react', 'jquery'],
                         <div className="video-loader">
                             {videoLoader}
                         </div>
-                        <VideoPlayer 
+                        <VideoPlayer ref="video"
                             source={this.linkForStream(this.props.videoId)} 
                             onloadeddata={this.videoLoaded} 
                             timeupdate={this.timeUpdated}
@@ -180,7 +188,7 @@ define(['react', 'jquery'],
                             playing={this.state.playing || !this.state.loaded}
                         />
                         <div className="video-controls">
-                            <div className="video-progress">
+                            <div className="video-progress" onClick={this.playbackClicked} ref="videoProgress">
                                 <div className="video-buffer" style={{width: bufferPercentage + "%"}}></div>
                                 <div className="video-playback" style={{width: playbackPercentage + "%"}}></div>
                             </div>
