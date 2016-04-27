@@ -71,17 +71,8 @@ define(['react', 'jquery'],
                 this.refs.videoElement.currentTime = seconds;
             },
             togglePlaying: function(){
-                var video = this.refs.videoElement;
-                if(this.props.playing === false){
-                    video.play();
-                    if(this.props.didPlay){
-                        this.props.didPlay();
-                    }
-                }else if(this.props.playing === true){
-                    video.pause();
-                    if(this.props.didPause){
-                        this.props.didPause();
-                    }
+                if(this.props.togglePlaying){
+                    this.props.togglePlaying();
                 }
             },
             render: function(){
@@ -139,7 +130,7 @@ define(['react', 'jquery'],
             toggleMute: function(){
                 if(this.state.volume == 0){
                     this.setState({
-                        muted: !this.state.muted,
+                        muted: false,
                         volume: 0.75
                     });
                 }else{
@@ -192,16 +183,6 @@ define(['react', 'jquery'],
                 var s = ((pos + 0.0) / this.refs.videoProgress.offsetWidth) * this.state.duration;
                 this.refs.video.seek(s);
             },
-            didPause: function(){
-                this.setState({
-                    playing: false
-                });
-            },
-            didPlay: function(){
-                this.setState({
-                    playing: true
-                });
-            },
             mouseMove: function(){
                 if(this.state.controlsHidden){
                     this.setState({
@@ -216,7 +197,7 @@ define(['react', 'jquery'],
                         controlsHidden: true,
                     });
                 }
-            }, 2000),
+            }, 3000),
             openVolume: function(){
                 this.setState({
                     showingVolume: true
@@ -274,8 +255,7 @@ define(['react', 'jquery'],
                             timeupdate={this.timeUpdated}
                             bufferupdate={this.bufferUpdated}
                             playing={this.state.playing || !this.state.loaded}
-                            didPause={this.didPause}
-                            didPlay={this.didPlay}
+                            togglePlaying={this.togglePlaying}
                             volume={this.state.muted ? 0 : this.state.volume}
                         />
                         <div className="video-controls">
