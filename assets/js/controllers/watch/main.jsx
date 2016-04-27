@@ -12,9 +12,21 @@ require(['jquery', 'react', 'react-dom',
     function ($, React, ReactDOM, VideoController) {
         $(document).ready(function(){
 
-		var video_id = window.location.href.split("/").pop();
+		function getParameterByName(name, url) {
+			    if (!url) url = window.location.href;
+			    name = name.replace(/[\[\]]/g, "\\$&");
+			    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			        results = regex.exec(url);
+			    if (!results) return null;
+			    if (!results[2]) return '';
+			    return decodeURIComponent(results[2].replace(/\+/g, " "));
+			}
+
+			var video_id = window.location.href.split("/").pop();
+			var session_id = getParameterByName("playbacksession", window.location.href);
+
             ReactDOM.render(
-                <VideoController videoId={video_id} />,
+                <VideoController videoId={video_id} sessionId={session_id}/>,
                 document.getElementById('video-page')
             );
 
